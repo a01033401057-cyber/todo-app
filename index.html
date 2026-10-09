@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>오늘의 할 일</title>
-  <meta name="theme-color" content="#F5F6F8">
+  <meta name="theme-color" content="#F5F6F8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#10131A" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
   <!-- manifest 링크는 file://에서 CORS 오류가 나므로 app.js가 http/https일 때만 추가한다 -->
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -12,6 +14,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="할 일">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="목표부터 하루까지 이어지는 개인 플래너">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -176,6 +179,16 @@
         <input id="s-week-hours" type="number" min="1" max="120" inputmode="numeric">
         <span class="field-hint">고정 일정을 빼고 내가 쓸 수 있는 시간이에요.</span>
       </div>
+
+      <fieldset class="backup">
+        <legend>백업</legend>
+        <p class="field-hint">데이터는 이 브라우저에만 저장돼요. 가끔 백업 파일을 받아 두면 다른 브라우저나 휴대폰에서 불러올 수 있어요.</p>
+        <div class="backup-actions">
+          <button class="btn" id="backup-export" type="button">백업 파일 내려받기</button>
+          <button class="btn" id="backup-import" type="button">백업 파일 불러오기</button>
+          <input class="visually-hidden" id="backup-file" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+        </div>
+      </fieldset>
 
       <p class="field-error" id="s-error" hidden></p>
 

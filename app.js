@@ -54,7 +54,9 @@ function restoreFocus(saved) {
 
 // 창을 닫은 뒤 포커스를 둘 곳 (없으면 기간 제목 근처로)
 function restoreFocusAfterDialog(key) {
-  if (!focusByKey(key)) document.getElementById('go-today').focus();
+  if (focusByKey(key)) return;
+  const todayButton = document.getElementById('go-today');
+  (todayButton.disabled ? document.getElementById('next') : todayButton).focus();
 }
 
 // ===== 그리기 =====

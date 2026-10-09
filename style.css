@@ -16,22 +16,26 @@
   --color-surface: #FFFFFF;
   --color-sunk: #EEF0F4;
   --color-text: #1F2937;
-  --color-muted: #6B7280;
+  --color-muted: #5B6270;
   --color-border: #E5E7EB;
   --color-primary: #4F46E5;
   --color-on-primary: #FFFFFF;
-  --color-danger: #DC2626;
+  --color-danger: #B91C1C;
   --color-good: #15803D;
   --color-good-soft: #DCFCE7;
   --color-warn: #B45309;
   --danger-soft: #FEE2E2;
-  --sun-ink: #DC2626;
+  --sun-ink: #C62828;
   --sat-ink: #2563EB;
   /* 달력 완료율 배경 (낮음 → 높음) */
   --rate-1: #F0FDF4;
   --rate-2: #DCFCE7;
   --rate-3: #BBF7D0;
   --color-focus: #4F46E5;
+
+  /* 태그 글자에 섞을 색 (라이트: 검정 35%, 다크: 섞지 않음) */
+  --tag-shade: #000000;
+  --tag-shade-amount: 35%;
 
   /* 골든 타임 강조 (노랑) */
   --golden-bg: #FEF3C7;
@@ -47,6 +51,55 @@
   --shadow: 0 8px 32px rgba(17, 24, 39, 0.2);
   --radius: 10px;
   --touch: 36px; /* 버튼·입력창 최소 높이 (모바일에서 44px) */
+}
+
+/* ===== 다크 모드: 시스템 설정을 따른다 ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* 카테고리 색은 어두운 배경에서 읽히도록 밝게 */
+    --cat-toeic: #6A9CF5;
+    --cat-workout: #4CC38A;
+    --cat-blog: #F29A5C;
+    --cat-stock: #EF7090;
+    --cat-reading: #A88AF0;
+    --cat-speaking: #3FC3CF;
+    --cat-rest: #C9A978;
+    --cat-etc: #9AA2B4;
+
+    --color-bg: #10131A;
+    --color-surface: #181C25;
+    --color-sunk: #222734;
+    --color-text: #E7EAF2;
+    --color-muted: #A2AABB;
+    --color-border: #2E3442;
+    --color-primary: #8095FF;
+    --color-on-primary: #0F1320;
+    --color-danger: #F07A73;
+    --color-good: #4CC38A;
+    --color-good-soft: #173A2A;
+    --color-warn: #E0A84A;
+    --color-focus: #8095FF;
+    --danger-soft: #3D1F22;
+    --sun-ink: #FF8A80;
+    --sat-ink: #8AB4FF;
+    --rate-1: #182A21;
+    --rate-2: #1C3B2B;
+    --rate-3: #225238;
+
+    --golden-bg: #3A3214;
+    --golden-badge: #6B5A12;
+    --golden-ink: #FDE68A;
+
+    --hero-bg: #2A3142;
+    --hero-ink: #FFFFFF;
+    --hero-muted: #C3C9D6;
+    --hero-accent: #FCD34D;
+
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --tag-shade-amount: 0%;
+  }
 }
 
 /* ===== 초기화 ===== */
@@ -762,6 +815,7 @@ button:disabled {
   padding: 1px 8px;
   border-radius: 6px;
   color: var(--c);
+  color: color-mix(in srgb, var(--c), var(--tag-shade) var(--tag-shade-amount));
   background: var(--color-sunk);
   background: color-mix(in srgb, var(--c) 14%, transparent);
   font-size: 0.75rem;
@@ -1097,6 +1151,11 @@ button:disabled {
 @media (max-width: 480px) {
   .week-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 한 열일 때는 빈 날 카드가 길어지지 않게 */
+  .day-card {
+    min-height: 0;
   }
 }
 
@@ -1830,6 +1889,30 @@ html:has(.cinema[open]) {
 
 .spacer {
   flex: 1;
+}
+
+/* 설정 창: 백업 */
+.backup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.backup legend {
+  padding: 0 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* ===== 하단, 토스트 ===== */
