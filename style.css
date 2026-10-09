@@ -220,6 +220,62 @@ select {
   opacity: 0.7;
 }
 
+/* 카테고리 배지 */
+.badge {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-work { background: var(--color-work); }
+.badge-personal { background: var(--color-personal); }
+.badge-study { background: var(--color-study); }
+
+/* 편집 모드 */
+.todo-item.is-editing {
+  flex-wrap: wrap;
+  opacity: 1;
+}
+
+.edit-input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+}
+
+.edit-category {
+  padding: 8px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.todo-edit,
+.edit-cancel {
+  flex: none;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.edit-save {
+  flex: none;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  cursor: pointer;
+}
+
 .todo-delete {
   flex: none;
   padding: 6px 10px;
