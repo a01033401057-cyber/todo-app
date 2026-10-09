@@ -118,6 +118,9 @@ function handleAction(element) {
     case 'edit':
       if (item) openEditor(item);
       break;
+    case 'focus':
+      if (item && !item.done) openCinema(item);
+      break;
     case 'thumb':
       if (item) {
         const day = getDay(item.key);
@@ -187,7 +190,11 @@ function setupEvents() {
   });
 
   document.addEventListener('input', (event) => {
-    if (event.target.id === 'add-input') state.addText = event.target.value;
+    const { target } = event;
+    if (target.id === 'add-input') state.addText = target.value;
+    if (target.id === 'fb-good' || target.id === 'fb-change') {
+      updateDay(target.dataset.date, { [target.id === 'fb-good' ? 'good' : 'change']: target.value.slice(0, 300) });
+    }
   });
 
   document.addEventListener('change', (event) => {
@@ -227,7 +234,9 @@ function requestPersistentStorage() {
 loadStore();
 setupEditor();
 setupSettings();
+setupCinema();
 setupEvents();
 render();
+resumeCinema();
 setupWebApp();
 requestPersistentStorage();

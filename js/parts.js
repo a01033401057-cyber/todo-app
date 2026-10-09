@@ -59,6 +59,14 @@ function planRow(item, opts = {}) {
         title: '오늘의 썸네일로 정하기',
         text: isThumb ? '★' : '☆',
         data: actData('thumb', { id: item.id }),
+      }),
+      !item.done && h('button', {
+        type: 'button',
+        class: 'icon-btn',
+        'aria-label': `영화관 모드로 집중하기: ${item.title}`,
+        title: '영화관 모드로 집중하기',
+        text: '▶',
+        data: actData('focus', { id: item.id }),
       })));
 }
 

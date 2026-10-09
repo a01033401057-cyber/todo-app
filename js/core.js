@@ -8,6 +8,7 @@ const KEYS = {
   settings: 'daily-todo:v2:settings',
   days: 'daily-todo:v2:days',
   ui: 'daily-todo:v2:ui',
+  cinema: 'daily-todo:v2:cinema',
   legacy: 'daily-todo:v1',
 };
 
@@ -225,10 +226,10 @@ const saveSettings = () => writeJSON(KEYS.settings, store.settings);
 const saveDays = () => writeJSON(KEYS.days, store.days);
 const saveUi = () => writeJSON(KEYS.ui, store.ui);
 
-// 날짜별 정보: 썸네일 id, 루틴 체크
+// 날짜별 정보: 썸네일 id, 루틴 체크, 하루 피드백(잘된 점·바꿀 점), 몰입 시간(분)
 function getDay(dateText) {
   const saved = store.days[dateText];
-  return { thumb: '', routine: {}, ...(isPlainObject(saved) ? saved : {}) };
+  return { thumb: '', routine: {}, good: '', change: '', focusMin: 0, ...(isPlainObject(saved) ? saved : {}) };
 }
 
 function updateDay(dateText, changes) {

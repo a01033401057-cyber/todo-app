@@ -792,6 +792,138 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+/* ===== 하루 피드백 ===== */
+.feedback {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .feedback {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ===== 영화관 모드 (일부러 항상 어두운 색) ===== */
+.cinema {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding:
+    calc(24px + env(safe-area-inset-top))
+    16px
+    calc(24px + env(safe-area-inset-bottom));
+  border: 0;
+  background: #0B0D12;
+  color: #EEF0F5;
+  text-align: center;
+}
+
+.cinema[open] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* 집중 화면이 열려 있는 동안 뒤 화면이 스크롤되지 않게 */
+html:has(.cinema[open]) {
+  overflow: hidden;
+}
+
+.cinema::backdrop {
+  background: #0B0D12;
+}
+
+.cinema :focus-visible {
+  outline-color: #FCD34D;
+}
+
+.cinema-eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #9CA3AF;
+}
+
+.cinema-title {
+  margin: 0;
+  max-width: 28ch;
+  font-size: clamp(1.25rem, 4vw, 1.875rem);
+  overflow-wrap: anywhere;
+}
+
+.cinema-clock {
+  margin: 0;
+  font-size: clamp(4rem, 18vw, 9rem);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.cinema-bar {
+  width: min(320px, 80vw);
+  height: 4px;
+  border-radius: 999px;
+  background: #23283A;
+  overflow: hidden;
+}
+
+.cinema-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #FCD34D;
+}
+
+.cinema-goal {
+  margin: -8px 0 0;
+  font-size: 0.875rem;
+  color: #9CA3AF;
+}
+
+.cinema-goal:empty {
+  display: none;
+}
+
+.cinema-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.cinema-actions .btn {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.cinema-primary {
+  border-color: #EEF0F5;
+  background: #EEF0F5;
+  color: #0B0D12;
+}
+
+.cinema-secondary {
+  border-color: #2E3446;
+  background: #161A24;
+  color: #EEF0F5;
+}
+
+.cinema-tip {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 0.8125rem;
+  color: #9CA3AF;
+}
+
 /* ===== 창 (편집·설정) ===== */
 .sheet {
   width: min(520px, calc(100% - 32px));

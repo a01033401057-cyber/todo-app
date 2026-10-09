@@ -74,9 +74,12 @@ function heroCard(dateText) {
       h('button', { type: 'button', class: 'btn btn-ghost', text: '바꾸기', data: actData('thumb-clear', { date: dateText }) })));
 }
 
-// 썸네일 카드 버튼 (3단계에서 영화관 모드 버튼이 앞에 붙는다)
+// 썸네일 카드 버튼
 function heroActions(item) {
-  return h('button', { type: 'button', class: 'btn btn-ghost', text: '완료', data: actData('toggle', { id: item.id }) });
+  return [
+    h('button', { type: 'button', class: 'btn btn-accent', text: '영화관 모드로 시작', data: actData('focus', { id: item.id }) }),
+    h('button', { type: 'button', class: 'btn btn-ghost', text: '완료', data: actData('toggle', { id: item.id }) }),
+  ];
 }
 
 // 진행률 패널
@@ -94,9 +97,10 @@ function dayProgressPanel(dateText) {
     miniProgress(plans));
 }
 
-// 진행률 줄 추가 통계 (3단계에서 몰입 시간이 들어간다)
-function dayStatsExtra() {
-  return null;
+// 진행률 줄: 그날 몰입 시간
+function dayStatsExtra(dateText) {
+  const label = dateText === todayString() ? '오늘 몰입 ' : '이날 몰입 ';
+  return h('span', {}, label, h('b', { text: String(Number(getDay(dateText).focusMin) || 0) }), '분');
 }
 
 // 빠른 추가
@@ -181,7 +185,15 @@ function daySideTop() {
   return null;
 }
 
-// 본문 맨 아래 (3단계에서 하루 피드백이 들어간다)
-function dayBottom() {
-  return null;
+// 하루 피드백 (입력하면 바로 저장, 다시 그리지 않는다)
+function dayBottom(dateText) {
+  const day = getDay(dateText);
+  const box = (id, label, value, placeholder) => h('div', { class: 'field' },
+    h('label', { htmlFor: id, text: label }),
+    h('textarea', { id, class: 'feedback-input', rows: '3', maxlength: '300', placeholder, data: { date: dateText } }, value));
+  return panel('하루 피드백', null,
+    hint('자책 대신 패턴 찾기. 짧게 한 줄이면 충분해요.'),
+    h('div', { class: 'feedback' },
+      box('fb-good', '잘된 점', day.good, '예: 아침 7시 단어 암기, 알람 끄자마자 바로 시작함'),
+      box('fb-change', '내일 바꿀 점', day.change, '예: 블로그는 밤 말고 점심 직후로 옮기기')));
 }

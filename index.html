@@ -143,6 +143,22 @@
     </form>
   </dialog>
 
+  <!-- 영화관 모드 (화면 전체를 덮는 집중 화면, 항상 어두운 색) -->
+  <dialog class="cinema" id="cinema" aria-labelledby="cinema-title">
+    <p class="cinema-eyebrow">영화관 모드 · 방해 요소 끄기</p>
+    <h2 class="cinema-title" id="cinema-title"></h2>
+    <p class="cinema-clock" id="cinema-clock" role="timer" aria-label="경과 시간">00:00</p>
+    <div class="cinema-bar" id="cinema-bar" role="progressbar" aria-label="예상 소요 시간 대비 진행" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <span id="cinema-fill"></span>
+    </div>
+    <p class="cinema-goal" id="cinema-goal"></p>
+    <div class="cinema-actions">
+      <button class="btn cinema-primary" id="cinema-done" type="button">완료하고 나가기</button>
+      <button class="btn cinema-secondary" id="cinema-stop" type="button">그만하기</button>
+    </div>
+    <p class="cinema-tip">휴대폰 알림은 끄고, 탭은 이것 하나만. 극장에 들어온 것처럼 이 일만 봐요.</p>
+  </dialog>
+
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <!-- 스크립트: 일반 <script>로 순서대로 (ES 모듈은 file://에서 동작하지 않음) -->
@@ -150,6 +166,7 @@
   <script src="js/parts.js"></script>
   <script src="js/editor.js"></script>
   <script src="js/settings.js"></script>
+  <script src="js/cinema.js"></script>
   <script src="js/day.js"></script>
   <script src="app.js"></script>
 </body>
