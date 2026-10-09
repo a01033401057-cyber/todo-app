@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>오늘의 할 일</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <!-- 1. 헤더 -->
+    <header class="header">
+      <h1 class="title">오늘의 할 일</h1>
+      <p class="today" id="today"></p>
+    </header>
+
+    <!-- 2. 진행률 영역 -->
+    <section class="progress" aria-label="진행률">
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p class="progress-text" id="progress-text">0/0 완료 (0%)</p>
+      <ul class="mini-progress">
+        <li class="mini" data-category="work">
+          <span class="mini-label">업무</span>
+          <div class="mini-bar"><div class="mini-fill"></div></div>
+          <span class="mini-text">0%</span>
+        </li>
+        <li class="mini" data-category="personal">
+          <span class="mini-label">개인</span>
+          <div class="mini-bar"><div class="mini-fill"></div></div>
+          <span class="mini-text">0%</span>
+        </li>
+        <li class="mini" data-category="study">
+          <span class="mini-label">공부</span>
+          <div class="mini-bar"><div class="mini-fill"></div></div>
+          <span class="mini-text">0%</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 3. 입력 영역 -->
+    <form class="add-form" id="add-form">
+      <input class="add-input" id="add-input" type="text" maxlength="100" placeholder="할 일을 입력하세요">
+      <select class="add-category" id="add-category">
+        <option value="work">업무</option>
+        <option value="personal">개인</option>
+        <option value="study">공부</option>
+      </select>
+      <button class="add-button" type="submit">추가</button>
+    </form>
+
+    <!-- 4. 필터 탭 -->
+    <nav class="filters" id="filters">
+      <button class="filter is-active" type="button" data-filter="all">전체</button>
+      <button class="filter" type="button" data-filter="work">업무</button>
+      <button class="filter" type="button" data-filter="personal">개인</button>
+      <button class="filter" type="button" data-filter="study">공부</button>
+    </nav>
+
+    <!-- 5. 할 일 목록 -->
+    <ul class="todo-list" id="todo-list"></ul>
+
+    <!-- 6. 하단 -->
+    <footer class="footer">
+      <button class="clear-button" id="clear-completed" type="button">완료 항목 삭제</button>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

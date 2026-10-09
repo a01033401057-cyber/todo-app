@@ -1,0 +1,202 @@
+/* ===== 기본 변수 ===== */
+:root {
+  --color-work: #3B82F6;
+  --color-personal: #10B981;
+  --color-study: #F59E0B;
+
+  --color-bg: #F5F6F8;
+  --color-surface: #FFFFFF;
+  --color-text: #1F2937;
+  --color-muted: #6B7280;
+  --color-border: #E5E7EB;
+  --color-primary: #4F46E5;
+  --color-danger: #EF4444;
+
+  --radius: 10px;
+}
+
+/* ===== 초기화 ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+/* ===== 레이아웃: 한 열, 최대 640px, 가운데 정렬 ===== */
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* ===== 헤더 ===== */
+.header {
+  margin-bottom: 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.today {
+  margin: 4px 0 0;
+  color: var(--color-muted);
+}
+
+/* ===== 진행률 ===== */
+.progress {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.progress-bar,
+.mini-bar {
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 12px;
+}
+
+.progress-fill,
+.mini-fill {
+  height: 100%;
+  width: 0;
+  background: var(--color-primary);
+}
+
+.progress-text {
+  margin: 8px 0 12px;
+  font-weight: 600;
+}
+
+.mini-progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mini {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.875rem;
+}
+
+.mini-bar {
+  height: 6px;
+}
+
+.mini[data-category="work"] .mini-fill { background: var(--color-work); }
+.mini[data-category="personal"] .mini-fill { background: var(--color-personal); }
+.mini[data-category="study"] .mini-fill { background: var(--color-study); }
+
+.mini-text {
+  color: var(--color-muted);
+}
+
+/* ===== 입력 영역 ===== */
+.add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.add-input {
+  flex: 1 1 140px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.add-category {
+  padding: 10px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.add-button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== 필터 탭 ===== */
+.filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+
+.filter {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter.is-active {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: #fff;
+}
+
+/* ===== 할 일 목록 ===== */
+.todo-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+/* ===== 하단 ===== */
+.footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.clear-button {
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-danger);
+  cursor: pointer;
+}
