@@ -180,9 +180,9 @@ function renderDay() {
   };
 }
 
-// 사이드 맨 위 (4단계에서 오늘의 목표가 들어간다)
-function daySideTop() {
-  return null;
+// 사이드 맨 위: 오늘의 목표 + 상위 목표(주간·월간·반기·연간)
+function daySideTop(dateText) {
+  return goalsPanel('오늘의 목표', 'day', dateText, 'day', dateText, parentGoals(levelsAbove('day', dateText)));
 }
 
 // 하루 피드백 (입력하면 바로 저장, 다시 그리지 않는다)

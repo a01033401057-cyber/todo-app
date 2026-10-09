@@ -107,6 +107,25 @@ function keyFor(scope, dateText) {
   return formatDate(date);
 }
 
+// 달 단위 이동: 그 달 1일 날짜 문자열 (윤년·월말도 안전)
+function addMonths(dateText, months) {
+  const date = parseDate(dateText);
+  return formatDate(new Date(date.getFullYear(), date.getMonth() + months, 1));
+}
+
+// 주차 이름: 목요일이 속한 달 기준 ('10월 2주차')
+function weekLabel(mondayText) {
+  const thursday = parseDate(addDays(mondayText, 3));
+  return `${thursday.getMonth() + 1}월 ${Math.ceil(thursday.getDate() / 7)}주차`;
+}
+
+// '10.5 – 10.11'
+function weekRange(mondayText) {
+  const start = parseDate(mondayText);
+  const end = parseDate(addDays(mondayText, 6));
+  return `${start.getMonth() + 1}.${start.getDate()} – ${end.getMonth() + 1}.${end.getDate()}`;
+}
+
 // '10월 10일 토요일'
 function dayLabel(dateText) {
   const date = parseDate(dateText);
@@ -132,8 +151,12 @@ const store = {
   items: [],
   settings: { ...DEFAULT_SETTINGS },
   days: {},
-  ui: { sort: 'time' },
+  ui: { sort: 'time', view: 'day', examplesSeeded: false },
 };
+
+// 기간 이름
+const SCOPE_LABELS = { year: '연간', half: '반기', month: '월간', week: '주간', day: '일일' };
+const MAX_UNIT_LENGTH = 10;
 
 // JSON 읽기 (없거나 깨졌으면 fallback)
 function readJSON(key, fallback) {
@@ -243,6 +266,11 @@ function findItem(id) {
   return store.items.find((item) => item.id === id);
 }
 
+// type·scope·key가 맞는 항목 (필터 미적용)
+function itemsOf(type, scope, key) {
+  return store.items.filter((item) => item.type === type && item.scope === scope && item.key === key);
+}
+
 // 일일 할 일 목록 (필터 미적용)
 function dayPlans(dateText) {
   return store.items.filter((item) => item.type === 'plan' && item.scope === 'day' && item.key === dateText);
@@ -291,6 +319,107 @@ function updatePlan(id, fields, dateText) {
   if (dateText) item.key = dateText;
   saveItems();
   return true;
+}
+
+// ===== 목표 =====
+
+// 수치형 목표인지 (목표 수치가 있으면 수치형, 없으면 체크형)
+const isNumericGoal = (goal) => Number(goal.target) > 0;
+
+// 진행률 (막대용, 반올림하지 않음: 1/500도 막대가 보이게)
+function goalRatio(goal) {
+  if (!isNumericGoal(goal)) return goal.done ? 100 : 0;
+  return Math.min(100, ((Number(goal.current) || 0) / Number(goal.target)) * 100);
+}
+
+// 진행률 (글자용: 10% 미만은 소수 첫째 자리까지)
+function goalPercent(goal) {
+  const ratio = goalRatio(goal);
+  return ratio < 10 ? Math.round(ratio * 10) / 10 : Math.round(ratio);
+}
+
+// 목표 입력값 검사 (제목이 비면 null). 수치형은 100% 이상이면 완료
+function normalizeGoalFields(fields) {
+  const title = cleanText(fields.title, MAX_TITLE_LENGTH);
+  if (!title) return null;
+  const target = Number(fields.target);
+  const hasTarget = Number.isFinite(target) && target > 0;
+  const current = Math.max(0, Number(fields.current) || 0);
+  return {
+    title,
+    cat: CATEGORY_MAP[fields.cat] ? fields.cat : 'etc',
+    target: hasTarget ? Math.round(target * 100) / 100 : '',
+    current: hasTarget ? Math.round(current * 100) / 100 : 0,
+    unit: hasTarget ? cleanText(fields.unit, MAX_UNIT_LENGTH) : '',
+    memo: cleanText(fields.memo, MAX_MEMO_LENGTH),
+    done: hasTarget ? current >= target : Boolean(fields.done),
+  };
+}
+
+// 편집 창에서 저장: 새 항목이면 추가, 아니면 수정 (제목이 비면 false)
+// base: { type, scope, key, month? }
+function saveFromEditor(id, base, fields) {
+  const normalized = base.type === 'goal' ? normalizeGoalFields(fields) : normalizePlanFields(fields);
+  if (!normalized) return false;
+  const existing = id ? findItem(id) : null;
+  const scoped = { scope: base.scope, key: base.key, month: base.scope === 'year' && base.type === 'plan' ? (base.month || '') : '' };
+  if (base.type === 'plan' && base.scope !== 'day') Object.assign(normalized, { time: '', fixed: false });
+  if (existing) {
+    Object.assign(existing, normalized, scoped, { example: false });
+  } else {
+    store.items.push({
+      id: createId(),
+      type: base.type,
+      ...scoped,
+      ...normalized,
+      done: base.type === 'goal' ? normalized.done : false,
+      createdAt: new Date().toISOString(),
+    });
+  }
+  saveItems();
+  return true;
+}
+
+// 수치형 목표 진행을 1 늘리거나 줄인다
+function stepGoal(id, delta) {
+  const goal = findItem(id);
+  if (!goal || !isNumericGoal(goal)) return;
+  goal.current = Math.max(0, (Number(goal.current) || 0) + delta);
+  goal.done = goal.current >= Number(goal.target);
+  saveItems();
+}
+
+// 처음 사용자용 예시 목표 (저장된 데이터가 하나도 없을 때만 한 번)
+function seedExamplesIfEmpty() {
+  if (store.ui.examplesSeeded) return;
+  let hasData = store.items.length > 0;
+  try {
+    hasData = hasData || [KEYS.settings, KEYS.days, KEYS.legacy].some((key) => localStorage.getItem(key) !== null);
+  } catch (error) {
+    hasData = true;
+  }
+  store.ui.examplesSeeded = true;
+  saveUi();
+  if (hasData) return;
+  const today = todayString();
+  const goal = (scope, title, cat, target, unit) => ({
+    id: createId(), type: 'goal', scope, key: keyFor(scope, today), title, cat,
+    target, current: 0, unit, memo: '', done: false, example: true, month: '', createdAt: new Date().toISOString(),
+  });
+  store.items.push(
+    goal('year', '토익 900점 넘기기', 'toeic', '', ''),
+    goal('year', '책 24권 읽기', 'reading', 24, '권'),
+    goal('half', '블로그 글 50개 올리기', 'blog', 50, '개'),
+    goal('month', '러닝 100km', 'workout', 100, 'km'),
+    goal('month', '블로그 포스팅 8개', 'blog', 8, '개'),
+    goal('week', '영어 회화 3회', 'speaking', 3, '회'),
+  );
+  saveItems();
+}
+
+function clearExamples() {
+  store.items = store.items.filter((item) => !item.example);
+  saveItems();
 }
 
 function removeItem(id) {

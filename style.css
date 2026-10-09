@@ -173,6 +173,31 @@ button:disabled {
   color: var(--color-text);
 }
 
+/* 기간 탭 */
+.tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--color-sunk);
+}
+
+.tabs button {
+  min-height: calc(var(--touch) - 6px);
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.tabs button.is-active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.12);
+}
+
 /* ===== 기간 이동 ===== */
 .nav {
   display: flex;
@@ -754,6 +779,148 @@ button:disabled {
   color: var(--golden-ink);
 }
 
+/* ===== 목표 ===== */
+.goal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--color-sunk);
+}
+
+.goal-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.goal-check {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 3px 0 0;
+}
+
+.goal-title {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-weight: 600;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.goal.is-done .goal-title {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.goal-bar {
+  height: 6px;
+}
+
+.goal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.goal-progress {
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper {
+  display: flex;
+  gap: 4px;
+}
+
+.step-btn {
+  min-width: var(--touch);
+  min-height: calc(var(--touch) - 8px);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.parent-goals {
+  list-style: none;
+  margin: 0;
+  padding: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.parent-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.8125rem;
+}
+
+.parent-row b {
+  flex: none;
+  width: 32px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.parent-row span {
+  min-width: 0;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.parent-row .is-done {
+  text-decoration: line-through;
+}
+
+.parent-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.badge-example {
+  border: 1px dashed var(--color-muted);
+  color: var(--color-muted);
+}
+
+.add-link {
+  color: var(--color-primary);
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--color-sunk);
+  font-size: 0.875rem;
+}
+
 /* ===== 체크리스트 (아침 루틴 등) ===== */
 .checklist {
   list-style: none;
@@ -958,7 +1125,8 @@ html:has(.cinema[open]) {
   min-width: 0;
 }
 
-.field label {
+.field label,
+.field-label {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-muted);

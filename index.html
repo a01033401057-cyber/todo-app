@@ -21,6 +21,12 @@
       <h1 class="title">오늘의 할 일</h1>
       <div class="top-actions">
         <button class="link-btn" id="open-settings" type="button">설정</button>
+        <div class="tabs" id="tabs" role="group" aria-label="기간 보기">
+          <button type="button" data-view="year">연간</button>
+          <button type="button" data-view="month">월간</button>
+          <button type="button" data-view="week">주간</button>
+          <button type="button" data-view="day">일일</button>
+        </div>
       </div>
     </header>
 
@@ -35,6 +41,9 @@
     <!-- 3. 카테고리 필터 칩 (app.js가 채운다) -->
     <nav class="filters" id="filters" aria-label="카테고리 필터"></nav>
 
+    <!-- 예시 안내 띠 (app.js가 채운다) -->
+    <div id="banner"></div>
+
     <!-- 4. 화면: 사이드 + 본문 (app.js가 채운다) -->
     <div class="layout">
       <aside class="stack side" id="side"></aside>
@@ -46,22 +55,41 @@
     </footer>
   </div>
 
-  <!-- 편집 창 (추가 '자세히'와 수정에 함께 사용) -->
+  <!-- 편집 창 (할 일·목표의 추가와 수정에 함께 사용) -->
   <dialog class="sheet" id="editor" aria-labelledby="editor-title">
     <form class="sheet-form" id="editor-form" novalidate>
       <h2 class="sheet-title" id="editor-title">할 일 수정</h2>
+      <p class="field-hint" data-for="goal">목표도 결과물로: ‘러닝’ 대신 ‘러닝 100km’처럼 숫자로 정하면 진행이 보여요.</p>
+
+      <div class="field" id="f-scope-field">
+        <span class="field-label" id="f-scope-label">기간</span>
+        <div class="seg" id="f-scope" role="group" aria-labelledby="f-scope-label"></div>
+      </div>
 
       <div class="field">
-        <label for="f-title">할 일 (끝났는지 알 수 있게)</label>
-        <input id="f-title" type="text" maxlength="100" autocomplete="off" placeholder="예: 토익 단어 100개 암기 + 복습 테스트">
+        <label for="f-title" id="f-title-label">할 일 (끝났는지 알 수 있게)</label>
+        <input id="f-title" type="text" maxlength="100" autocomplete="off">
       </div>
 
       <div class="field-row">
         <div class="field">
-          <label for="f-date">날짜</label>
+          <label for="f-date" id="f-date-label">날짜</label>
           <input id="f-date" type="date">
+          <span class="field-hint" id="f-week-note"></span>
         </div>
         <div class="field">
+          <label for="f-year">연도</label>
+          <input id="f-year" type="number" min="2000" max="2100" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="f-month">월</label>
+          <select id="f-month"></select>
+        </div>
+        <div class="field">
+          <label for="f-plan-month">목표 월</label>
+          <select id="f-plan-month"></select>
+        </div>
+        <div class="field" data-for="plan-day">
           <label for="f-time">시작 시간 (선택)</label>
           <input id="f-time" type="time">
         </div>
@@ -72,22 +100,37 @@
           <label for="f-cat">카테고리</label>
           <select id="f-cat"></select>
         </div>
-        <div class="field">
+        <div class="field" data-for="plan">
           <label for="f-sub">세부 항목</label>
           <input id="f-sub" type="text" maxlength="30" list="f-sub-list" autocomplete="off" placeholder="직접 입력">
           <datalist id="f-sub-list"></datalist>
         </div>
       </div>
 
-      <div class="field-row">
+      <div class="field-row" data-for="plan">
         <div class="field">
           <label for="f-dur">예상 소요 시간</label>
           <select id="f-dur"></select>
         </div>
-        <label class="check-line field-check">
+        <label class="check-line field-check" data-for="plan-day">
           <input id="f-fixed" type="checkbox">
           고정 일정 (수업·알바처럼 옮길 수 없는 일)
         </label>
+      </div>
+
+      <div class="field-row" data-for="goal">
+        <div class="field">
+          <label for="f-target">목표 수치 (선택)</label>
+          <input id="f-target" type="number" min="0" step="any" inputmode="decimal" placeholder="예: 100">
+        </div>
+        <div class="field">
+          <label for="f-unit">단위</label>
+          <input id="f-unit" type="text" maxlength="10" autocomplete="off" placeholder="예: km, 권, 개, 회">
+        </div>
+        <div class="field">
+          <label for="f-current">현재 진행</label>
+          <input id="f-current" type="number" min="0" step="any" inputmode="decimal">
+        </div>
       </div>
 
       <div class="field">
@@ -95,7 +138,7 @@
         <input id="f-memo" type="text" maxlength="200" autocomplete="off">
       </div>
 
-      <p class="field-error" id="f-error" hidden>할 일 내용을 입력해 주세요.</p>
+      <p class="field-error" id="f-error" hidden>내용을 입력해 주세요.</p>
 
       <div class="sheet-actions">
         <button class="btn btn-danger" id="f-delete" type="button">삭제</button>
@@ -167,7 +210,11 @@
   <script src="js/editor.js"></script>
   <script src="js/settings.js"></script>
   <script src="js/cinema.js"></script>
+  <script src="js/goals.js"></script>
   <script src="js/day.js"></script>
+  <script src="js/week.js"></script>
+  <script src="js/month.js"></script>
+  <script src="js/year.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

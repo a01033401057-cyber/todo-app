@@ -1,7 +1,7 @@
 // 오늘의 할 일 — 서비스 워커 (오프라인 지원)
 
 // 캐시 버전: 앱 파일을 수정할 때마다 숫자를 올린다
-const CACHE_VERSION = 4;
+const CACHE_VERSION = 5;
 const CACHE_NAME = `daily-todo-cache-v${CACHE_VERSION}`;
 
 // 설치 시 미리 저장할 앱 파일 (모두 상대 경로)
@@ -14,7 +14,11 @@ const APP_FILES = [
   './js/editor.js',
   './js/settings.js',
   './js/cinema.js',
+  './js/goals.js',
   './js/day.js',
+  './js/week.js',
+  './js/month.js',
+  './js/year.js',
   './app.js',
   './manifest.json',
   './icons/icon-192.png',

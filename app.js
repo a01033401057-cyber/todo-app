@@ -1,6 +1,10 @@
 // 오늘의 할 일 — 앱 시작, 화면 전환, 이벤트 연결 (js/ 파일들을 먼저 불러온 뒤 마지막에 실행)
 
 // 화면 상태
+const VIEWS = ['year', 'month', 'week', 'day'];
+const VIEW_RENDERERS = { year: () => renderYear(), month: () => renderMonth(), week: () => renderWeek(), day: () => renderDay() };
+const NAV_LABELS = { year: ['이전 해', '다음 해'], month: ['이전 달', '다음 달'], week: ['이전 주', '다음 주'], day: ['이전 날', '다음 날'] };
+
 const state = {
   view: 'day',
   date: todayString(), // 보고 있는 날짜 'YYYY-MM-DD'
@@ -65,17 +69,25 @@ function renderFilters() {
   }, option.id !== 'all' && h('span', { class: 'dot', cat: option.id }), option.label)));
 }
 
+// 기간 이동 줄, 탭, 예시 안내
 function renderNav() {
-  const isToday = state.date === todayString();
   const todayButton = document.getElementById('go-today');
-  todayButton.disabled = isToday;
-  todayButton.textContent = isToday ? '오늘' : '오늘로';
+  todayButton.disabled = keyFor(state.view, state.date) === keyFor(state.view, todayString());
+  const [prevLabel, nextLabel] = NAV_LABELS[state.view];
+  document.getElementById('prev').setAttribute('aria-label', prevLabel);
+  document.getElementById('next').setAttribute('aria-label', nextLabel);
+  document.querySelectorAll('#tabs button').forEach((button) => {
+    const selected = button.dataset.view === state.view;
+    button.setAttribute('aria-pressed', String(selected));
+    button.classList.toggle('is-active', selected);
+  });
+  document.getElementById('banner').replaceChildren(...[exampleBanner()].filter(Boolean));
 }
 
 // 현재 상태로 화면 전체를 다시 그린다
 function render() {
   const saved = rememberFocus();
-  const { side, main } = renderDay();
+  const { side, main } = VIEW_RENDERERS[state.view]();
   sideEl.replaceChildren(...[side].flat(Infinity).filter(Boolean));
   mainEl.replaceChildren(...[main].flat(Infinity).filter(Boolean));
   renderFilters();
@@ -83,10 +95,24 @@ function render() {
   restoreFocus(saved);
 }
 
-// 날짜 이동
-function moveDate(days) {
-  state.date = addDays(state.date, days);
+// 기간 이동: 보고 있는 탭의 단위(년/월/주/일)로
+function move(direction) {
+  if (state.view === 'day') state.date = addDays(state.date, direction);
+  else if (state.view === 'week') state.date = addDays(state.date, 7 * direction);
+  else if (state.view === 'month') state.date = addMonths(state.date, direction);
+  else state.date = addMonths(state.date, 12 * direction);
   render();
+}
+
+// 탭 바꾸기 (마지막으로 본 탭 기억)
+function setView(view, dateText) {
+  if (!VIEWS.includes(view)) return;
+  state.view = view;
+  if (dateText) state.date = dateText;
+  store.ui.view = view;
+  saveUi();
+  render();
+  window.scrollTo(0, 0);
 }
 
 // ===== 동작 =====
@@ -117,6 +143,23 @@ function handleAction(element) {
       break;
     case 'edit':
       if (item) openEditor(item);
+      break;
+    case 'inc':
+    case 'dec':
+      if (item) stepGoal(item.id, act === 'inc' ? 1 : -1);
+      render();
+      break;
+    case 'new-goal':
+      openEditor(null, {
+        type: 'goal', pick: element.dataset.pick, date: element.dataset.date, cat: state.filter === 'all' ? 'etc' : state.filter, returnFocus: element.dataset.fk,
+      });
+      break;
+    case 'clear-examples':
+      if (confirm('예시 목표를 모두 지울까요?')) {
+        clearExamples();
+        toast('예시를 모두 지웠어요');
+        render();
+      }
       break;
     case 'focus':
       if (item && !item.done) openCinema(item);
@@ -162,8 +205,12 @@ function handleAction(element) {
 }
 
 function setupEvents() {
-  document.getElementById('prev').addEventListener('click', () => moveDate(-1));
-  document.getElementById('next').addEventListener('click', () => moveDate(1));
+  document.getElementById('prev').addEventListener('click', () => move(-1));
+  document.getElementById('next').addEventListener('click', () => move(1));
+  document.getElementById('tabs').addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-view]');
+    if (button) setView(button.dataset.view);
+  });
   document.getElementById('go-today').addEventListener('click', () => {
     state.date = todayString();
     render();
@@ -232,6 +279,8 @@ function requestPersistentStorage() {
 
 // ===== 앱 시작 =====
 loadStore();
+seedExamplesIfEmpty();
+if (VIEWS.includes(store.ui.view)) state.view = store.ui.view;
 setupEditor();
 setupSettings();
 setupCinema();
