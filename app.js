@@ -170,6 +170,9 @@ function handleAction(element) {
     case 'goto-day':
       setView('day', element.dataset.date);
       break;
+    case 'goto-month':
+      setView('month', element.dataset.date);
+      break;
     case 'goto-week':
       setView('week', element.dataset.date);
       break;
@@ -233,6 +236,7 @@ function setupEvents() {
     render();
   });
   document.getElementById('open-settings').addEventListener('click', openSettings);
+  document.getElementById('open-guide').addEventListener('click', openGuide);
 
   // 화면 안의 버튼은 모두 위임으로 처리 (창 안의 버튼은 각 창이 처리)
   document.addEventListener('click', (event) => {
@@ -306,6 +310,7 @@ seedExamplesIfEmpty();
 if (VIEWS.includes(store.ui.view)) state.view = store.ui.view;
 setupEditor();
 setupSettings();
+setupGuide();
 setupCinema();
 setupEvents();
 render();

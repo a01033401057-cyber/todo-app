@@ -20,6 +20,7 @@
     <header class="topbar">
       <h1 class="title">오늘의 할 일</h1>
       <div class="top-actions">
+        <button class="link-btn" id="open-guide" type="button">시간관리 4단계</button>
         <button class="link-btn" id="open-settings" type="button">설정</button>
         <div class="tabs" id="tabs" role="group" aria-label="기간 보기">
           <button type="button" data-view="year">연간</button>
@@ -184,6 +185,52 @@
         <button class="btn btn-primary" type="submit">저장</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- 시간관리 4단계 안내 -->
+  <dialog class="sheet sheet-wide" id="guide" aria-labelledby="guide-title">
+    <div class="sheet-form">
+      <h2 class="sheet-title" id="guide-title">시간관리 4단계</h2>
+      <ol class="guide">
+        <li class="guide-step">
+          <span class="guide-no" aria-hidden="true">1</span>
+          <div>
+            <h3>연간 · 방향</h3>
+            <p>올해 꼭 이루고 싶은 결과를 몇 개만 정해요. 상반기·하반기로 나누면 중간 점검이 쉬워요.</p>
+            <p class="guide-where"><b>플래너에서</b> 연간 탭의 연간·상반기·하반기 목표, 목표 월을 정한 연간 계획</p>
+          </div>
+        </li>
+        <li class="guide-step">
+          <span class="guide-no" aria-hidden="true">2</span>
+          <div>
+            <h3>월간 · 분기점</h3>
+            <p>연간 목표를 이번 달 몫으로 쪼개요. ‘러닝 500km’라면 이번 달은 ‘러닝 40km’처럼 숫자로.</p>
+            <p class="guide-where"><b>플래너에서</b> 월간 탭의 월간 목표와 달력, 카테고리 집계</p>
+          </div>
+        </li>
+        <li class="guide-step">
+          <span class="guide-no" aria-hidden="true">3</span>
+          <div>
+            <h3>주간 · 설계 (일요일 10분)</h3>
+            <p>지난주 피드백을 읽고, 고정 일정을 먼저 넣은 뒤, 가용 시간의 70–80%만 채워요.</p>
+            <p class="guide-where"><b>플래너에서</b> 주간 탭의 주간 설계 체크리스트와 계획량 막대, 주간 회고</p>
+          </div>
+        </li>
+        <li class="guide-step">
+          <span class="guide-no" aria-hidden="true">4</span>
+          <div>
+            <h3>일일 · 실행</h3>
+            <p>오늘의 썸네일 1가지를 정해 골든 타임에 두고, 영화관 모드로 몰입해요. 하루 끝엔 잘된 점과 바꿀 점을 한 줄씩.</p>
+            <p class="guide-where"><b>플래너에서</b> 일일 탭의 오늘의 썸네일, 골든 타임, ▶ 영화관 모드, 하루 피드백</p>
+          </div>
+        </li>
+      </ol>
+      <p class="guide-end">시간관리는 일을 많이 하는 게 아니라, 중요한 것을 놓치지 않고 내 리듬을 찾아가는 과정이에요.</p>
+      <div class="sheet-actions">
+        <span class="spacer"></span>
+        <button class="btn btn-primary" id="guide-close" type="button">닫기</button>
+      </div>
+    </div>
   </dialog>
 
   <!-- 영화관 모드 (화면 전체를 덮는 집중 화면, 항상 어두운 색) -->

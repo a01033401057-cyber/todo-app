@@ -23,6 +23,21 @@ function setupSettings() {
   });
 }
 
+// ===== 시간관리 4단계 안내 =====
+function setupGuide() {
+  const dialog = document.getElementById('guide');
+  document.getElementById('guide-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => restoreFocusAfterDialog('open-guide'));
+  dialog.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+}
+
+function openGuide() {
+  document.getElementById('guide').showModal();
+  document.getElementById('guide-close').focus();
+}
+
 function openSettings() {
   const s = settingsDialog;
   const { golden, routine, weekHours } = store.settings;
