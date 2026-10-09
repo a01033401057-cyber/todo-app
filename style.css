@@ -186,6 +186,50 @@ select {
   padding: 0;
 }
 
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.todo-check {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.todo-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.todo-item.is-completed .todo-text {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+.todo-item.is-completed {
+  opacity: 0.7;
+}
+
+.todo-delete {
+  flex: none;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-danger);
+  cursor: pointer;
+}
+
 /* ===== 하단 ===== */
 .footer {
   display: flex;
