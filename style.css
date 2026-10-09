@@ -1636,6 +1636,29 @@ button:disabled {
   font-variant-numeric: tabular-nums;
 }
 
+.banner-import {
+  background: var(--golden-bg);
+  color: var(--golden-ink);
+}
+
+.banner-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 블로그 도구 바로가기는 마우스가 있는 PC에서만 (휴대폰에서는 localhost가 휴대폰 자신이라 열리지 않음) */
+.blog-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .blog-link {
+    display: none;
+  }
+}
+
 /* ===== 체크리스트 (아침 루틴 등) ===== */
 .checklist {
   list-style: none;

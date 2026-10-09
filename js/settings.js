@@ -24,6 +24,12 @@ function setupSettings() {
     importBackup(fileInput.files[0]);
     fileInput.value = '';
   });
+  const taskInput = document.getElementById('task-import-file');
+  document.getElementById('task-import').addEventListener('click', () => taskInput.click());
+  taskInput.addEventListener('change', () => {
+    importTaskFile(taskInput.files[0]);
+    taskInput.value = '';
+  });
   s.dialog.addEventListener('close', () => restoreFocusAfterDialog('open-settings'));
   s.dialog.addEventListener('click', (event) => {
     if (event.target === s.dialog) s.dialog.close();
@@ -123,6 +129,159 @@ function importBackup(file) {
     toast('백업 파일을 불러왔어요');
   };
   reader.readAsText(file);
+}
+
+// ===== 블로그 도구에서 보낸 할 일 가져오기 (기존 데이터는 그대로, 추가만) =====
+// 형식: { app: 'daily-todo-import', version: 1, source, items: [{ importId, date, title, cat, sub, memo, dur }] }
+// 같은 importId를 다시 받으면 새로 만들지 않고, 끝나지 않은 할 일의 날짜·메모만 갱신한다
+const IMPORT_APP = 'daily-todo-import';
+const MAX_IMPORT_ITEMS = 500;
+const BLOG_TOOL_URL = 'http://localhost:8501';
+
+// 받은 내용 검사 (틀리면 null, 하나라도 틀리면 전부 거절)
+function validateTaskImport(payload) {
+  if (!isPlainObject(payload) || payload.app !== IMPORT_APP || !Array.isArray(payload.items)) return null;
+  if (!payload.items.length || payload.items.length > MAX_IMPORT_ITEMS) return null;
+  const items = [];
+  for (const raw of payload.items) {
+    if (!isPlainObject(raw) || typeof raw.importId !== 'string' || !raw.importId.trim() || !isDateText(raw.date)) return null;
+    const fields = normalizePlanFields({ cat: 'blog', ...raw });
+    if (!fields) return null;
+    items.push({ importId: cleanText(raw.importId, 200), date: raw.date, fields });
+  }
+  return { source: cleanText(payload.source, 40) || '다른 앱', items };
+}
+
+// 가져오면 무엇이 바뀌는지 미리 센다
+function previewImport(items) {
+  const counts = { added: 0, updated: 0, kept: 0 };
+  items.forEach(({ importId, date, fields }) => {
+    const existing = store.items.find((item) => item.importId === importId);
+    if (!existing) counts.added += 1;
+    else if (!existing.done && (existing.key !== date || existing.memo !== fields.memo)) counts.updated += 1;
+    else counts.kept += 1;
+  });
+  return counts;
+}
+
+// 실제로 추가·갱신한다 (사용자가 고친 제목·카테고리·시간은 건드리지 않는다)
+function applyImport(items) {
+  items.forEach(({ importId, date, fields }) => {
+    const existing = store.items.find((item) => item.importId === importId);
+    if (!existing) {
+      store.items.push({
+        id: createId(), type: 'plan', scope: 'day', key: date, ...fields, done: false, importId, createdAt: new Date().toISOString(),
+      });
+    } else if (!existing.done) {
+      existing.key = date;
+      existing.memo = fields.memo;
+    }
+  });
+  saveItems();
+}
+
+// 가져오기 대기: 화면 위 안내 띠에서 확인을 받는다 (확인 창 대신 — 다른 앱 안에 넣어 열어도 동작하게)
+function queueImport(payload) {
+  const valid = validateTaskImport(payload);
+  if (!valid) {
+    state.pendingImport = null;
+    toast('가져올 할 일 형식이 올바르지 않아요. 아무것도 바꾸지 않았어요.');
+    render();
+    return;
+  }
+  state.pendingImport = { ...valid, counts: previewImport(valid.items) };
+  render();
+  document.querySelector('[data-act="import-accept"]')?.focus();
+}
+
+function acceptImport() {
+  const pending = state.pendingImport;
+  if (!pending) return;
+  applyImport(pending.items);
+  state.pendingImport = null;
+  const { added, updated } = pending.counts;
+  toast(added || updated ? `새로 ${added}개 추가, ${updated}개 날짜 갱신했어요` : '이미 모두 들어 있어요');
+  // 가장 가까운 날짜로 이동해서 바로 보이게
+  const today = todayString();
+  const dates = pending.items.map((item) => item.date).sort();
+  state.date = dates.find((date) => date >= today) ?? dates[dates.length - 1];
+  setView('day');
+}
+
+function cancelImport() {
+  state.pendingImport = null;
+  render();
+}
+
+// 가져오기 안내 띠
+function importBanner() {
+  const pending = state.pendingImport;
+  if (!pending) return null;
+  const { added, updated, kept } = pending.counts;
+  const parts = [`새로 ${added}개`];
+  if (updated) parts.push(`날짜 바뀜 ${updated}개`);
+  if (kept) parts.push(`이미 있음 ${kept}개`);
+  return h('div', { class: 'banner banner-import', role: 'alert' },
+    h('span', {}, h('b', { text: pending.source }), `에서 보낸 할 일 ${pending.items.length}개 · ${parts.join(' · ')}`),
+    h('span', { class: 'banner-actions' },
+      h('button', { type: 'button', class: 'btn btn-primary', text: '가져오기', data: actData('import-accept') }),
+      h('button', { type: 'button', class: 'btn', text: '취소', data: actData('import-cancel') })));
+}
+
+// base64url → 바이트
+function base64UrlToBytes(encoded) {
+  const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+  const binary = atob(base64 + '='.repeat((4 - (base64.length % 4)) % 4));
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+}
+
+// 주소의 #importz=…(raw deflate 압축) 또는 #import=…(압축 없음) 읽기. 읽은 뒤 주소에서 지운다
+async function readImportFromHash() {
+  const match = location.hash.match(/^#(importz?)=(.+)$/);
+  if (!match) return;
+  const [, kind, encoded] = match;
+  history.replaceState(null, '', `${location.pathname}${location.search}`);
+  if (kind === 'importz' && typeof DecompressionStream === 'undefined') {
+    toast('이 브라우저는 링크로 가져오기를 지원하지 않아요. 설정에서 파일로 가져와 주세요.');
+    return;
+  }
+  try {
+    let bytes = base64UrlToBytes(encoded);
+    if (kind === 'importz') {
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+    queueImport(JSON.parse(new TextDecoder().decode(bytes)));
+  } catch (error) {
+    queueImport(null);
+  }
+}
+
+// 파일로 가져오기
+function importTaskFile(file) {
+  if (!file) return;
+  if (file.size > BACKUP_MAX_BYTES) {
+    queueImport(null);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onerror = () => queueImport(null);
+  reader.onload = () => {
+    let payload = null;
+    try { payload = JSON.parse(String(reader.result)); } catch (error) { payload = null; }
+    settingsDialog.dialog.close();
+    queueImport(payload);
+  };
+  reader.readAsText(file);
+}
+
+// 블로그 도구 바로가기: PC(마우스)에서만, 블로그 도구 안에 넣어 열었을 때는 숨긴다
+function setupBlogLink() {
+  const link = document.getElementById('blog-tool-link');
+  let embedded = true;
+  try { embedded = window.self !== window.top; } catch (error) { embedded = true; }
+  link.href = BLOG_TOOL_URL;
+  link.hidden = embedded;
 }
 
 // ===== 시간관리 4단계 안내 =====

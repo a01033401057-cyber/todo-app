@@ -13,3 +13,5 @@
 - 사용자 입력은 항상 textContent로 출력 (innerHTML에 사용자 입력 금지)
 - 글꼴은 시스템 글꼴만 사용 (외부 폰트 금지)
 - 코드 주석과 화면 문구는 한국어
+- 블로그 수익화 도구(Desktop/blog-tools) 연동: 플래너는 `#importz=`(raw deflate + base64url JSON)·`#import=` 링크와 '설정 → 블로그 할 일 가져오기' 파일로 할 일을 **추가만** 받는다 (형식 `app: 'daily-todo-import'`, 같은 `importId`는 끝나지 않은 할 일의 날짜·메모만 갱신). 형식을 바꾸면 blog-tools의 `blogtools/planner_link.py`도 같이 바꿀 것
+- 다른 앱 안(iframe)에서도 열리므로 가져오기 확인은 confirm() 대신 화면 안 안내 띠로 받는다. 다른 탭에서 저장하면 `storage` 이벤트로 다시 읽는다

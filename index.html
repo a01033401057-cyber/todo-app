@@ -23,6 +23,8 @@
     <header class="topbar">
       <h1 class="title">오늘의 할 일</h1>
       <div class="top-actions">
+        <a class="link-btn blog-link" id="blog-tool-link" href="http://localhost:8501" target="_blank" rel="noopener" hidden
+           title="이 PC에서 블로그 수익화 도구를 켜 두었을 때 열려요">블로그 도구 ↗</a>
         <button class="link-btn" id="open-guide" type="button">시간관리 4단계</button>
         <button class="link-btn" id="open-settings" type="button">설정</button>
         <div class="tabs" id="tabs" role="group" aria-label="기간 보기">
@@ -187,6 +189,15 @@
           <button class="btn" id="backup-export" type="button">백업 파일 내려받기</button>
           <button class="btn" id="backup-import" type="button">백업 파일 불러오기</button>
           <input class="visually-hidden" id="backup-file" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true">
+        </div>
+      </fieldset>
+
+      <fieldset class="backup">
+        <legend>블로그 도구 연결</legend>
+        <p class="field-hint">블로그 수익화 도구의 ‘일정 관리 → 플래너로 보내기’에서 받은 파일을 넣으면 그 날짜의 블로그 할 일로 추가돼요. 지금 데이터는 그대로예요.</p>
+        <div class="backup-actions">
+          <button class="btn" id="task-import" type="button">블로그 할 일 가져오기</button>
+          <input class="visually-hidden" id="task-import-file" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true">
         </div>
       </fieldset>
 

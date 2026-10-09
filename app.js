@@ -11,6 +11,7 @@ const state = {
   filter: 'all', // 'all' 또는 카테고리 저장 값
   addText: '', // 추가 입력칸에 적는 중인 글
   addCat: 'toeic',
+  pendingImport: null, // 다른 앱에서 보낸 할 일 (확인 전)
 };
 
 const sideEl = document.getElementById('side');
@@ -83,7 +84,7 @@ function renderNav() {
     button.setAttribute('aria-pressed', String(selected));
     button.classList.toggle('is-active', selected);
   });
-  document.getElementById('banner').replaceChildren(...[exampleBanner()].filter(Boolean));
+  document.getElementById('banner').replaceChildren(...[importBanner(), exampleBanner()].filter(Boolean));
 }
 
 // 현재 상태로 화면 전체를 다시 그린다
@@ -155,6 +156,12 @@ function handleAction(element) {
       openEditor(null, {
         type: 'goal', pick: element.dataset.pick, date: element.dataset.date, cat: state.filter === 'all' ? 'etc' : state.filter, returnFocus: element.dataset.fk,
       });
+      break;
+    case 'import-accept':
+      acceptImport();
+      break;
+    case 'import-cancel':
+      cancelImport();
       break;
     case 'clear-examples':
       if (confirm('예시 목표를 모두 지울까요?')) {
@@ -251,6 +258,20 @@ function setupEvents() {
     if (element) handleAction(element);
   });
 
+  // 열려 있는 앱에 새 #import= 링크가 들어와도 처리
+  window.addEventListener('hashchange', readImportFromHash);
+
+  // 다른 탭(예: 링크로 연 새 탭)에서 데이터가 바뀌면 다시 읽는다. 안 그러면 이 탭이 옛 데이터로 덮어쓴다
+  window.addEventListener('storage', (event) => {
+    if (event.key !== null && event.key !== KEYS.items && !event.key.startsWith(`${KEYS.items}:`)) return;
+    loadStore();
+    if (state.pendingImport) state.pendingImport.counts = previewImport(state.pendingImport.items);
+    render();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && state.pendingImport && !document.querySelector('dialog[open]')) cancelImport();
+  });
+
   document.addEventListener('submit', (event) => {
     if (event.target.id !== 'add-form') return;
     event.preventDefault();
@@ -331,9 +352,11 @@ if (VIEWS.includes(store.ui.view)) state.view = store.ui.view;
 setupEditor();
 setupSettings();
 setupGuide();
+setupBlogLink();
 setupCinema();
 setupEvents();
 render();
+readImportFromHash();
 resumeCinema();
 setupWebApp();
 requestPersistentStorage();
