@@ -1,8 +1,14 @@
 /* ===== 기본 변수 ===== */
 :root {
-  --color-work: #3B82F6;
-  --color-personal: #10B981;
-  --color-study: #F59E0B;
+  /* 카테고리 8개 색상 (app.js가 --c: var(--cat-저장값)으로 연결) */
+  --cat-toeic: #2d6fe0;
+  --cat-workout: #1f9d61;
+  --cat-blog: #e0752d;
+  --cat-stock: #c83a5a;
+  --cat-reading: #7a4fd0;
+  --cat-speaking: #0f9aa8;
+  --cat-rest: #9a7b4f;
+  --cat-etc: #7b8496;
 
   --color-bg: #F5F6F8;
   --color-surface: #FFFFFF;
@@ -34,7 +40,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
   color: inherit;
 }
@@ -89,9 +96,28 @@ button:disabled {
   font-size: 1.75rem;
 }
 
-.today {
-  margin: 4px 0 0;
-  color: var(--color-muted);
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.current-date {
+  margin: 0 4px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-btn {
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+}
+
+#go-today {
+  margin-left: auto;
 }
 
 /* ===== 진행률 ===== */
@@ -126,9 +152,7 @@ button:disabled {
   transition: width 0.3s ease;
 }
 
-.mini[data-category="work"] .mini-fill { background: var(--color-work); }
-.mini[data-category="personal"] .mini-fill { background: var(--color-personal); }
-.mini[data-category="study"] .mini-fill { background: var(--color-study); }
+.mini .mini-fill { background: var(--c); }
 
 .progress-text {
   margin: 8px 0 12px;
@@ -153,8 +177,8 @@ button:disabled {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 12px;
 }
 
 .mini {
@@ -165,16 +189,33 @@ button:disabled {
   font-size: 0.875rem;
 }
 
+.mini-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .mini-text {
   color: var(--color-muted);
   font-size: 0.8125rem;
 }
 
+/* 이 날짜에 할 일이 없는 카테고리는 흐리게 */
+.mini.is-empty {
+  opacity: 0.45;
+}
+
+@media (max-width: 480px) {
+  .mini-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* ===== 공통 컨트롤 ===== */
 .add-input,
 .add-category,
-.edit-input,
-.edit-category {
+.field input,
+.field select {
   min-height: var(--touch);
   padding: 8px 10px;
   border: 1px solid var(--color-border);
@@ -182,8 +223,7 @@ button:disabled {
   background: var(--color-surface);
 }
 
-.add-input,
-.edit-input {
+.add-input {
   flex: 1 1 140px;
   min-width: 0;
 }
@@ -217,23 +257,32 @@ button:disabled {
   margin-bottom: 16px;
 }
 
-/* ===== 필터 탭 ===== */
+/* ===== 필터 칩 (가로로 줄바꿈) ===== */
 .filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
-  overflow-x: auto;
 }
 
 .filter {
-  flex: 1 1 0;
-  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: var(--touch);
-  padding: 6px;
+  padding: 4px 12px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-surface);
+  font-size: 0.875rem;
   white-space: nowrap;
+}
+
+.filter .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c);
 }
 
 .filter.is-active {
@@ -278,8 +327,34 @@ button:disabled {
   cursor: pointer;
 }
 
-.todo-text {
+.todo-body {
   flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+}
+
+/* 제목 버튼: 누르면 편집 창 */
+.todo-title {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.todo-time {
+  flex: none;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.todo-text {
   min-width: 0;
   word-break: keep-all; /* 한국어는 단어 단위로 줄바꿈 */
   overflow-wrap: anywhere;
@@ -290,32 +365,44 @@ button:disabled {
   color: var(--color-muted);
 }
 
-.todo-item.is-completed .badge {
+.todo-item.is-completed .todo-meta {
   opacity: 0.6;
 }
 
-/* 카테고리 배지 (어두운 글자로 대비 확보) */
-.badge {
+/* 보조 줄: 태그, 세부 항목, 소요 시간, 고정 배지, 메모 */
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.meta-memo {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 카테고리 태그 (카테고리 색 글자 + 옅은 배경) */
+.tag {
   flex: none;
-  padding: 2px 8px;
-  border-radius: 999px;
-  color: #111827;
+  padding: 1px 8px;
+  border-radius: 6px;
+  color: var(--c);
+  background: var(--color-bg);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
   font-size: 0.75rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
-.badge-work { background: var(--color-work); }
-.badge-personal { background: var(--color-personal); }
-.badge-study { background: var(--color-study); }
-
-/* 편집 모드 */
-.todo-item.is-editing {
-  flex-wrap: wrap;
-  padding: 10px;
-}
-
-.edit-input {
-  border-color: var(--color-primary);
+.fixed-badge {
+  padding: 0 6px;
+  border: 1px solid var(--color-muted);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 /* 빈 상태 안내 */
@@ -348,6 +435,89 @@ button:disabled {
   color: var(--color-muted);
   font-size: 0.8125rem;
   text-align: center;
+}
+
+/* ===== 편집 창 ===== */
+.editor {
+  width: min(480px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 20px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 8px 32px rgba(17, 24, 39, 0.2);
+}
+
+.editor::backdrop {
+  background: rgba(17, 24, 39, 0.45);
+}
+
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-title {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-width: 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.check-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.check-line input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.field-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 /* ===== 모바일: 터치 영역 최소 44x44px ===== */
