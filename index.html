@@ -15,62 +15,56 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="app">
-    <!-- 1. 헤더: 앱 이름 + 날짜 이동 -->
-    <header class="header">
+  <div class="app">
+    <!-- 1. 헤더 -->
+    <header class="topbar">
       <h1 class="title">오늘의 할 일</h1>
-      <div class="date-nav">
-        <button class="btn nav-btn" id="prev-day" type="button" aria-label="이전 날">‹</button>
-        <h2 class="current-date" id="current-date" aria-live="polite"></h2>
-        <button class="btn nav-btn" id="next-day" type="button" aria-label="다음 날">›</button>
-        <button class="btn" id="go-today" type="button">오늘</button>
+      <div class="top-actions">
+        <button class="link-btn" id="open-settings" type="button">설정</button>
       </div>
     </header>
 
-    <!-- 2. 진행률 영역 (보고 있는 날짜 기준) -->
-    <section class="progress" aria-label="진행률">
-      <div class="progress-bar" id="progress-bar" role="progressbar" aria-label="전체 진행률"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <div class="progress-fill" id="progress-fill"></div>
-      </div>
-      <p class="progress-text" id="progress-text" aria-live="polite">0/0 완료 (0%)</p>
-      <p class="celebrate" id="celebrate" hidden></p>
-      <!-- 카테고리별 미니 진행률: app.js가 8개 카테고리로 채운다 -->
-      <ul class="mini-progress" id="mini-progress"></ul>
-    </section>
+    <!-- 2. 기간 이동 -->
+    <div class="nav">
+      <button class="btn nav-btn" id="prev" type="button" aria-label="이전 날">‹</button>
+      <button class="btn nav-btn" id="next" type="button" aria-label="다음 날">›</button>
+      <button class="btn" id="go-today" type="button">오늘</button>
+      <h2 class="period" id="period" aria-live="polite"><span id="period-title"></span><small id="period-sub"></small></h2>
+    </div>
 
-    <!-- 3. 입력 영역 -->
-    <form class="add-form" id="add-form">
-      <label class="visually-hidden" for="add-input">할 일 내용</label>
-      <input class="add-input" id="add-input" type="text" maxlength="100" placeholder="할 일을 입력하세요" autocomplete="off">
-      <label class="visually-hidden" for="add-category">카테고리</label>
-      <select class="add-category" id="add-category"></select>
-      <button class="btn" id="add-detail" type="button">자세히</button>
-      <button class="btn btn-primary" type="submit">추가</button>
-    </form>
-
-    <!-- 4. 필터 칩: app.js가 전체 + 8개 카테고리로 채운다 -->
+    <!-- 3. 카테고리 필터 칩 (app.js가 채운다) -->
     <nav class="filters" id="filters" aria-label="카테고리 필터"></nav>
 
-    <!-- 5. 할 일 목록 -->
-    <ul class="todo-list" id="todo-list" aria-label="할 일 목록"></ul>
-    <p class="empty" id="empty-message" hidden></p>
+    <!-- 4. 화면: 사이드 + 본문 (app.js가 채운다) -->
+    <div class="layout">
+      <aside class="stack side" id="side"></aside>
+      <main class="stack main" id="main"></main>
+    </div>
 
-    <!-- 6. 하단 -->
     <footer class="footer">
-      <button class="btn btn-danger" id="clear-completed" type="button">완료 항목 삭제</button>
       <p class="notice">데이터는 이 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 함께 삭제돼요.</p>
     </footer>
-  </main>
+  </div>
 
-  <!-- 7. 편집 창 (추가 '자세히'와 수정에 함께 사용) -->
-  <dialog class="editor" id="editor" aria-labelledby="editor-title">
-    <form class="editor-form" id="editor-form" novalidate>
-      <h2 class="editor-title" id="editor-title">할 일 수정</h2>
+  <!-- 편집 창 (추가 '자세히'와 수정에 함께 사용) -->
+  <dialog class="sheet" id="editor" aria-labelledby="editor-title">
+    <form class="sheet-form" id="editor-form" novalidate>
+      <h2 class="sheet-title" id="editor-title">할 일 수정</h2>
 
       <div class="field">
-        <label for="f-title">할 일</label>
-        <input id="f-title" type="text" maxlength="100" autocomplete="off" required>
+        <label for="f-title">할 일 (끝났는지 알 수 있게)</label>
+        <input id="f-title" type="text" maxlength="100" autocomplete="off" placeholder="예: 토익 단어 100개 암기 + 복습 테스트">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-date">날짜</label>
+          <input id="f-date" type="date">
+        </div>
+        <div class="field">
+          <label for="f-time">시작 시간 (선택)</label>
+          <input id="f-time" type="time">
+        </div>
       </div>
 
       <div class="field-row">
@@ -87,13 +81,13 @@
 
       <div class="field-row">
         <div class="field">
-          <label for="f-time">시작 시간 (선택)</label>
-          <input id="f-time" type="time">
-        </div>
-        <div class="field">
           <label for="f-dur">예상 소요 시간</label>
           <select id="f-dur"></select>
         </div>
+        <label class="check-line field-check">
+          <input id="f-fixed" type="checkbox">
+          고정 일정 (수업·알바처럼 옮길 수 없는 일)
+        </label>
       </div>
 
       <div class="field">
@@ -101,20 +95,62 @@
         <input id="f-memo" type="text" maxlength="200" autocomplete="off">
       </div>
 
-      <label class="check-line">
-        <input id="f-fixed" type="checkbox">
-        고정 일정 (수업·알바처럼 옮길 수 없는 일)
-      </label>
-
       <p class="field-error" id="f-error" hidden>할 일 내용을 입력해 주세요.</p>
 
-      <div class="editor-actions">
+      <div class="sheet-actions">
+        <button class="btn btn-danger" id="f-delete" type="button">삭제</button>
+        <span class="spacer"></span>
         <button class="btn" id="f-cancel" type="button">취소</button>
         <button class="btn btn-primary" id="f-submit" type="submit">저장</button>
       </div>
     </form>
   </dialog>
 
+  <!-- 설정 창 -->
+  <dialog class="sheet" id="settings" aria-labelledby="settings-title">
+    <form class="sheet-form" id="settings-form" novalidate>
+      <h2 class="sheet-title" id="settings-title">설정</h2>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="s-golden-start">골든 타임 시작</label>
+          <input id="s-golden-start" type="time">
+        </div>
+        <div class="field">
+          <label for="s-golden-end">골든 타임 끝</label>
+          <input id="s-golden-end" type="time">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="s-routine">아침 루틴 (한 줄에 하나, 최대 10개)</label>
+        <textarea id="s-routine" rows="4"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="s-week-hours">한 주 기본 가용 시간 (시간)</label>
+        <input id="s-week-hours" type="number" min="1" max="120" inputmode="numeric">
+        <span class="field-hint">고정 일정을 빼고 내가 쓸 수 있는 시간이에요.</span>
+      </div>
+
+      <p class="field-error" id="s-error" hidden></p>
+
+      <div class="sheet-actions">
+        <span class="spacer"></span>
+        <button class="btn" id="s-cancel" type="button">취소</button>
+        <button class="btn btn-primary" type="submit">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- 스크립트: 일반 <script>로 순서대로 (ES 모듈은 file://에서 동작하지 않음) -->
+  <script src="js/core.js"></script>
+  <script src="js/parts.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/day.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
