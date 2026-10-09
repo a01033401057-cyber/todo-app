@@ -403,7 +403,32 @@ filters.addEventListener('click', (event) => {
 // 완료 항목 일괄 삭제
 clearButton.addEventListener('click', clearCompleted);
 
+// 웹 앱 설치·오프라인 기능을 켠다 (http/https에서만, file://에서는 건너뜀)
+function setupWebApp() {
+  const isWeb = location.protocol === 'http:' || location.protocol === 'https:';
+  if (!isWeb) return;
+
+  const manifest = document.createElement('link');
+  manifest.rel = 'manifest';
+  manifest.href = 'manifest.json';
+  document.head.append(manifest);
+
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('./sw.js').catch(() => {
+    // 등록 실패해도 앱은 그대로 동작한다
+  });
+}
+
+// 브라우저에 저장 데이터를 지우지 말아 달라고 요청한다 (지원할 때만)
+function requestPersistentStorage() {
+  if (navigator.storage && navigator.storage.persist) {
+    navigator.storage.persist().catch(() => {});
+  }
+}
+
 // ===== 앱 시작 =====
 renderToday();
 todos = loadTodos();
 render();
+setupWebApp();
+requestPersistentStorage();

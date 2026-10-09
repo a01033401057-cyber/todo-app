@@ -71,7 +71,12 @@ button:disabled {
 .app {
   max-width: 640px;
   margin: 0 auto;
-  padding: 24px 16px 40px;
+  /* 아이폰 노치·홈 바에 가리지 않도록 안전 영역 여백 추가 */
+  padding:
+    calc(24px + env(safe-area-inset-top))
+    calc(16px + env(safe-area-inset-right))
+    calc(40px + env(safe-area-inset-bottom))
+    calc(16px + env(safe-area-inset-left));
 }
 
 /* ===== 헤더 ===== */
