@@ -9,6 +9,7 @@ const KEYS = {
   days: 'daily-todo:v2:days',
   ui: 'daily-todo:v2:ui',
   cinema: 'daily-todo:v2:cinema',
+  weeks: 'daily-todo:v2:weeks',
   legacy: 'daily-todo:v1',
 };
 
@@ -151,6 +152,7 @@ const store = {
   items: [],
   settings: { ...DEFAULT_SETTINGS },
   days: {},
+  weeks: {},
   ui: { sort: 'time', view: 'day', examplesSeeded: false },
 };
 
@@ -240,6 +242,8 @@ function loadStore() {
   store.settings = normalizeSettings(readJSON(KEYS.settings, null));
   const days = readJSON(KEYS.days, {});
   store.days = isPlainObject(days) ? days : {};
+  const weeks = readJSON(KEYS.weeks, {});
+  store.weeks = isPlainObject(weeks) ? weeks : {};
   const ui = readJSON(KEYS.ui, {});
   store.ui = { ...store.ui, ...(isPlainObject(ui) ? ui : {}) };
 }
@@ -248,6 +252,7 @@ const saveItems = () => writeJSON(KEYS.items, store.items);
 const saveSettings = () => writeJSON(KEYS.settings, store.settings);
 const saveDays = () => writeJSON(KEYS.days, store.days);
 const saveUi = () => writeJSON(KEYS.ui, store.ui);
+const saveWeeks = () => writeJSON(KEYS.weeks, store.weeks);
 
 // 날짜별 정보: 썸네일 id, 루틴 체크, 하루 피드백(잘된 점·바꿀 점), 몰입 시간(분)
 function getDay(dateText) {
@@ -258,6 +263,17 @@ function getDay(dateText) {
 function updateDay(dateText, changes) {
   store.days[dateText] = { ...getDay(dateText), ...changes };
   saveDays();
+}
+
+// 주별 정보 (키 = 그 주 월요일): 주간 설계 체크, 이 주 가용 시간, 다음 주에 바꿀 한 가지
+function getWeek(mondayText) {
+  const saved = store.weeks[mondayText];
+  return { checks: {}, hours: '', reflect: '', ...(isPlainObject(saved) ? saved : {}) };
+}
+
+function updateWeek(mondayText, changes) {
+  store.weeks[mondayText] = { ...getWeek(mondayText), ...changes };
+  saveWeeks();
 }
 
 // ===== 항목 =====

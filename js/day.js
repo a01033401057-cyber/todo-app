@@ -165,9 +165,12 @@ function dayPlanPanel(dateText) {
       h('button', { type: 'button', class: 'btn btn-danger', disabled: !hasDone, text: '완료 항목 삭제', data: actData('clear-done', { date: dateText }) })));
 }
 
-// 본문 맨 위에 덧붙는 안내 (5단계에서 일요일 안내가 들어간다)
-function dayTopNotice() {
-  return null;
+// 일요일 안내: 다음 주 설계하기
+function dayTopNotice(dateText) {
+  if (parseDate(dateText).getDay() !== 0) return null;
+  return h('div', { class: 'callout', role: 'note' },
+    h('span', { text: '일요일이에요. 10분만 들여 다음 주를 설계해 보세요.' }),
+    h('button', { type: 'button', class: 'btn btn-primary', text: '다음 주 설계하기', data: actData('goto-week', { date: addDays(dateText, 1) }) }));
 }
 
 // 일일 화면 그리기

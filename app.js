@@ -161,6 +161,23 @@ function handleAction(element) {
         render();
       }
       break;
+    case 'wcheck': {
+      const week = getWeek(element.dataset.wk);
+      updateWeek(element.dataset.wk, { checks: { ...week.checks, [element.dataset.k]: element.checked } });
+      render();
+      break;
+    }
+    case 'goto-day':
+      setView('day', element.dataset.date);
+      break;
+    case 'goto-week':
+      setView('week', element.dataset.date);
+      break;
+    case 'new-plan':
+      openEditor(null, {
+        type: 'plan', pick: element.dataset.pick, date: element.dataset.date, cat: state.filter === 'all' ? 'etc' : state.filter, returnFocus: element.dataset.fk,
+      });
+      break;
     case 'focus':
       if (item && !item.done) openCinema(item);
       break;
@@ -239,6 +256,7 @@ function setupEvents() {
   document.addEventListener('input', (event) => {
     const { target } = event;
     if (target.id === 'add-input') state.addText = target.value;
+    if (target.id === 'wk-reflect') updateWeek(target.dataset.wk, { reflect: target.value.slice(0, 300) });
     if (target.id === 'fb-good' || target.id === 'fb-change') {
       updateDay(target.dataset.date, { [target.id === 'fb-good' ? 'good' : 'change']: target.value.slice(0, 300) });
     }
@@ -247,6 +265,11 @@ function setupEvents() {
   document.addEventListener('change', (event) => {
     const { target } = event;
     if (target.id === 'add-category') state.addCat = target.value;
+    if (target.id === 'wk-hours') {
+      const hours = Number(target.value);
+      updateWeek(target.dataset.wk, { hours: hours >= 1 && hours <= 120 ? hours : '' });
+      render();
+    }
     if (target.id === 'thumb-pick' && target.value) {
       updateDay(target.dataset.date, { thumb: target.value });
       render();

@@ -2,7 +2,7 @@
 
 // 기간 선택지. 목표는 연간 탭에서 상반기·하반기도 고를 수 있게 반기를 둘로 나눠 보여 준다
 const GOAL_PICKS = [['year', '연간'], ['half1', '상반기'], ['half2', '하반기'], ['month', '월간'], ['week', '주간'], ['day', '일일']];
-const PLAN_PICKS = [['day', '일일']];
+const PLAN_PICKS = [['day', '일일'], ['week', '주간']];
 
 const editor = {
   dialog: document.getElementById('editor'),

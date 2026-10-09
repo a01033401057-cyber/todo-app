@@ -24,6 +24,9 @@
   --color-good: #15803D;
   --color-good-soft: #DCFCE7;
   --color-warn: #B45309;
+  --danger-soft: #FEE2E2;
+  --sun-ink: #DC2626;
+  --sat-ink: #2563EB;
   --color-focus: #4F46E5;
 
   /* 골든 타임 강조 (노랑) */
@@ -919,6 +922,366 @@ button:disabled {
   border-radius: 12px;
   background: var(--color-sunk);
   font-size: 0.875rem;
+}
+
+/* ===== 안내 상자 ===== */
+.callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--golden-bg);
+  color: var(--golden-ink);
+  font-size: 0.9375rem;
+}
+
+.callout span {
+  flex: 1 1 200px;
+  overflow-wrap: anywhere;
+}
+
+/* ===== 주간: 설계 체크리스트 ===== */
+.design-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.design-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.design-step > input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 3px 0 0;
+}
+
+.design-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.step-no {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  letter-spacing: 0.06em;
+}
+
+.design-title {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.design-step.is-done .design-title {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+/* 계획량 막대: 70–80% 초록 띠 */
+.capacity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cap-bar {
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.cap-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 70%;
+  width: 10%;
+  background: var(--color-good-soft);
+  border-inline: 1px solid var(--color-good);
+}
+
+.cap-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 999px;
+  background: var(--color-primary);
+  opacity: 0.85;
+}
+
+.cap-bar.is-ok .cap-fill {
+  background: var(--color-good);
+}
+
+.cap-bar.is-over .cap-fill {
+  background: var(--color-danger);
+}
+
+.cap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.cap-legend b {
+  color: var(--color-text);
+}
+
+.inline-input input {
+  width: 64px;
+  min-height: 32px;
+  margin: 0 2px;
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+
+.cap-state {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.cap-state.is-low {
+  background: var(--color-sunk);
+  color: var(--color-primary);
+}
+
+.cap-state.is-ok {
+  background: var(--color-good-soft);
+  color: var(--color-good);
+}
+
+.cap-state.is-over {
+  background: var(--danger-soft);
+  color: var(--color-danger);
+}
+
+/* ===== 주간: 7일 카드 ===== */
+.week-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .week-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 150px;
+  padding: 10px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.day-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.day-card-head b {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.day-num {
+  padding: 0 2px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+/* 오늘: 형광펜 강조 */
+.day-card.is-today .day-num {
+  background: linear-gradient(transparent 55%, var(--golden-badge) 55%);
+}
+
+.day-card.is-sun .day-card-head b {
+  color: var(--sun-ink);
+}
+
+.day-card.is-sat .day-card-head b {
+  color: var(--sat-ink);
+}
+
+.day-load {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.mini-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mini-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.mini-item input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+}
+
+.mini-title {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 0 6px;
+  border: 0;
+  border-left: 3px solid var(--c);
+  background: transparent;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* 고정 일정은 점선 */
+.mini-item.is-fixed .mini-title {
+  border-left-style: dotted;
+  color: var(--color-muted);
+}
+
+.mini-item.is-done .mini-title {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.mini-star {
+  color: var(--color-warn);
+}
+
+.mini-time {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-card-add {
+  margin-top: auto;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.day-card-add:hover {
+  color: var(--color-primary);
+}
+
+/* ===== 피드백 모아 보기 ===== */
+.note-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-list li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.note-list b {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.note-list p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.note-list span {
+  overflow-wrap: anywhere;
+}
+
+.note-tag {
+  margin-right: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+/* ===== 카테고리 집계 ===== */
+.tally {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tally-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8125rem;
+}
+
+.tally-bar .bar-fill {
+  background: var(--c);
+}
+
+.tally-num {
+  text-align: right;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ===== 체크리스트 (아침 루틴 등) ===== */
