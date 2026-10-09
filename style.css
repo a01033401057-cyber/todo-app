@@ -83,11 +83,25 @@ select {
   height: 100%;
   width: 0;
   background: var(--color-primary);
+  transition: width 0.3s ease;
 }
 
 .progress-text {
   margin: 8px 0 12px;
   font-weight: 600;
+}
+
+.celebrate {
+  margin: -4px 0 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ECFDF5;
+  color: #047857;
+  font-weight: 600;
+}
+
+.celebrate[hidden] {
+  display: none;
 }
 
 .mini-progress {

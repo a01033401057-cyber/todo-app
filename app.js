@@ -16,11 +16,18 @@ let todos = [];
 // 현재 편집 중인 할 일 id (한 번에 하나만, 없으면 null)
 let editingId = null;
 
+// 현재 필터: 'all' | 'work' | 'personal' | 'study'
+let currentFilter = 'all';
+
 // 자주 쓰는 DOM 요소
 const addForm = document.getElementById('add-form');
 const addInput = document.getElementById('add-input');
 const addCategory = document.getElementById('add-category');
 const todoList = document.getElementById('todo-list');
+const filters = document.getElementById('filters');
+const progressFill = document.getElementById('progress-fill');
+const progressText = document.getElementById('progress-text');
+const celebrate = document.getElementById('celebrate');
 
 // localStorage에서 할 일 목록을 불러온다 (실패하거나 배열이 아니면 빈 배열)
 function loadTodos() {
@@ -103,6 +110,14 @@ function toggleTodo(id) {
   commit();
 }
 
+// 완료 개수·전체 개수·완료율을 계산한다 (0으로 나누지 않음)
+function getProgress(list) {
+  const total = list.length;
+  const done = list.filter((todo) => todo.completed).length;
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+  return { done, total, percent };
+}
+
 // 버튼 요소를 만든다
 function createButton(className, label) {
   const button = document.createElement('button');
@@ -183,9 +198,43 @@ function createTodoItem(todo) {
   return li;
 }
 
-// 현재 상태로 목록을 다시 그린다 (미완료 위, 완료 아래)
+// 진행률 영역을 그린다 (필터와 무관하게 항상 전체 기준)
+function renderProgress() {
+  const { done, total, percent } = getProgress(todos);
+  progressFill.style.width = `${percent}%`;
+  progressText.textContent = `${done}/${total} 완료 (${percent}%)`;
+  celebrate.hidden = !(total > 0 && done === total);
+
+  document.querySelectorAll('.mini').forEach((mini) => {
+    const category = mini.dataset.category;
+    const progress = getProgress(todos.filter((todo) => todo.category === category));
+    mini.querySelector('.mini-fill').style.width = `${progress.percent}%`;
+    mini.querySelector('.mini-text').textContent = `${progress.done}/${progress.total} (${progress.percent}%)`;
+  });
+}
+
+// 필터 탭을 그린다 (선택 강조 + 남은 개수)
+function renderFilters() {
+  filters.querySelectorAll('.filter').forEach((tab) => {
+    const filter = tab.dataset.filter;
+    const label = filter === 'all' ? '전체' : CATEGORY_LABELS[filter];
+    const remaining = todos.filter(
+      (todo) => !todo.completed && (filter === 'all' || todo.category === filter),
+    ).length;
+    tab.textContent = `${label} (${remaining})`;
+    tab.classList.toggle('is-active', filter === currentFilter);
+  });
+}
+
+// 현재 상태로 화면을 다시 그린다 (필터 적용, 미완료 위, 완료 아래)
 function render() {
-  const sorted = [...todos].sort((a, b) => Number(a.completed) - Number(b.completed));
+  renderProgress();
+  renderFilters();
+
+  const visible = currentFilter === 'all'
+    ? todos
+    : todos.filter((todo) => todo.category === currentFilter);
+  const sorted = [...visible].sort((a, b) => Number(a.completed) - Number(b.completed));
   const fragment = document.createDocumentFragment();
   sorted.forEach((todo) => fragment.appendChild(createTodoItem(todo)));
   todoList.replaceChildren(fragment);
@@ -250,6 +299,23 @@ todoList.addEventListener('keydown', (event) => {
   }
 });
 
+// 필터 탭 클릭
+filters.addEventListener('click', (event) => {
+  const tab = event.target.closest('.filter');
+  if (!tab) return;
+  currentFilter = tab.dataset.filter;
+  render();
+});
+
+// 헤더에 오늘 날짜를 표시한다 (예: 2026년 10월 3일 (토))
+function renderToday() {
+  const now = new Date();
+  const date = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+  const weekday = now.toLocaleDateString('ko-KR', { weekday: 'short' });
+  document.getElementById('today').textContent = `${date} (${weekday})`;
+}
+
 // 앱 시작
+renderToday();
 todos = loadTodos();
 render();
