@@ -10,9 +10,11 @@
   --color-muted: #6B7280;
   --color-border: #E5E7EB;
   --color-primary: #4F46E5;
-  --color-danger: #EF4444;
+  --color-danger: #DC2626;
+  --color-focus: #4F46E5;
 
   --radius: 10px;
+  --touch: 36px; /* 버튼·입력창 최소 높이 (모바일에서 44px) */
 }
 
 /* ===== 초기화 ===== */
@@ -34,6 +36,35 @@ button,
 input,
 select {
   font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* 키보드 포커스 표시 */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* 화면에는 숨기고 스크린 리더에는 읽히게 */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ===== 레이아웃: 한 열, 최대 640px, 가운데 정렬 ===== */
@@ -78,6 +109,10 @@ select {
   height: 12px;
 }
 
+.mini-bar {
+  height: 6px;
+}
+
 .progress-fill,
 .mini-fill {
   height: 100%;
@@ -85,6 +120,10 @@ select {
   background: var(--color-primary);
   transition: width 0.3s ease;
 }
+
+.mini[data-category="work"] .mini-fill { background: var(--color-work); }
+.mini[data-category="personal"] .mini-fill { background: var(--color-personal); }
+.mini[data-category="study"] .mini-fill { background: var(--color-study); }
 
 .progress-text {
   margin: 8px 0 12px;
@@ -121,16 +160,48 @@ select {
   font-size: 0.875rem;
 }
 
-.mini-bar {
-  height: 6px;
-}
-
-.mini[data-category="work"] .mini-fill { background: var(--color-work); }
-.mini[data-category="personal"] .mini-fill { background: var(--color-personal); }
-.mini[data-category="study"] .mini-fill { background: var(--color-study); }
-
 .mini-text {
   color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+/* ===== 공통 컨트롤 ===== */
+.add-input,
+.add-category,
+.edit-input,
+.edit-category {
+  min-height: var(--touch);
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.add-input,
+.edit-input {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.btn {
+  flex: none;
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.btn-primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-danger {
+  color: var(--color-danger);
 }
 
 /* ===== 입력 영역 ===== */
@@ -139,32 +210,6 @@ select {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
-}
-
-.add-input {
-  flex: 1 1 140px;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-}
-
-.add-category {
-  padding: 10px 8px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-}
-
-.add-button {
-  padding: 10px 18px;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--color-primary);
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 /* ===== 필터 탭 ===== */
@@ -178,12 +223,11 @@ select {
 .filter {
   flex: 1 1 0;
   min-width: 0;
-  padding: 8px 6px;
+  min-height: var(--touch);
+  padding: 6px;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
   white-space: nowrap;
 }
 
@@ -196,23 +240,33 @@ select {
 /* ===== 할 일 목록 ===== */
 .todo-list {
   list-style: none;
-  margin: 0 0 16px;
+  margin: 0;
   padding: 0;
 }
 
 .todo-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 6px 10px 6px 4px;
   margin-bottom: 8px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
 }
 
-.todo-check {
+/* 체크박스 터치 영역 44x44 */
+.check-area {
   flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+}
+
+.todo-check {
   width: 20px;
   height: 20px;
   margin: 0;
@@ -222,6 +276,7 @@ select {
 .todo-text {
   flex: 1 1 auto;
   min-width: 0;
+  word-break: keep-all; /* 한국어는 단어 단위로 줄바꿈 */
   overflow-wrap: anywhere;
 }
 
@@ -230,18 +285,18 @@ select {
   color: var(--color-muted);
 }
 
-.todo-item.is-completed {
-  opacity: 0.7;
+.todo-item.is-completed .badge {
+  opacity: 0.6;
 }
 
-/* 카테고리 배지 */
+/* 카테고리 배지 (어두운 글자로 대비 확보) */
 .badge {
   flex: none;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #fff;
+  color: #111827;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .badge-work { background: var(--color-work); }
@@ -251,66 +306,48 @@ select {
 /* 편집 모드 */
 .todo-item.is-editing {
   flex-wrap: wrap;
-  opacity: 1;
+  padding: 10px;
 }
 
 .edit-input {
-  flex: 1 1 180px;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid var(--color-primary);
-  border-radius: 8px;
+  border-color: var(--color-primary);
 }
 
-.edit-category {
-  padding: 8px 6px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+/* 빈 상태 안내 */
+.empty {
+  margin: 0;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-muted);
   background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
 }
 
-.todo-edit,
-.edit-cancel {
-  flex: none;
-  padding: 6px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.edit-save {
-  flex: none;
-  padding: 6px 10px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--color-primary);
-  color: #fff;
-  cursor: pointer;
-}
-
-.todo-delete {
-  flex: none;
-  padding: 6px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-danger);
-  cursor: pointer;
+.empty[hidden] {
+  display: none;
 }
 
 /* ===== 하단 ===== */
 .footer {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.clear-button {
-  padding: 8px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  color: var(--color-danger);
-  cursor: pointer;
+.notice {
+  align-self: stretch;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+/* ===== 모바일: 터치 영역 최소 44x44px ===== */
+@media (max-width: 600px), (pointer: coarse) {
+  :root {
+    --touch: 44px;
+  }
 }
