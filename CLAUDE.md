@@ -2,9 +2,14 @@
 
 - 순수 HTML, CSS, JavaScript(ES6+)만 사용. 외부 라이브러리, 프레임워크, 빌드 도구, CDN 금지
 - 파일 구성: index.html, style.css, app.js, manifest.json, sw.js, icons/ 폴더 (아이콘 생성 스크립트는 tools/make_icons.py)
+- app.js가 너무 커지면 js/ 폴더에 파일을 나눠도 됨. 단 ES 모듈(type="module", import)은 file://에서 동작하지 않으므로 금지. 일반 <script src> 태그로 순서대로 불러오고, 새 파일은 sw.js의 APP_FILES에도 추가할 것
+- reference/ 폴더는 참고용이며 앱에서 불러오거나 sw.js 캐시에 넣지 말 것
 - index.html을 브라우저에서 더블클릭해 바로 실행되어야 함 (서버 불필요). file:// 실행도 계속 오류 없이 동작해야 함 (서비스 워커는 http/https에서만 등록)
 - 앱 파일(index.html, style.css, app.js, manifest.json, 아이콘)을 수정할 때마다 sw.js의 CACHE_VERSION 숫자를 1 올릴 것
 - 모든 경로는 상대 경로 (GitHub Pages 하위 주소에서도 동작해야 함)
-- 하루 10~20개의 할 일을 관리하는 개인용 앱, 카테고리는 업무/개인/공부 3개 고정
+- 연간·반기·월간·주간·일일 목표와 계획을 관리하는 개인용 플래너
+- 카테고리는 8개 고정: 토익, 운동, 블로그, 주식 공부, 독서, 영어 회화, 휴식, 기타
+- 데이터 구조를 바꿀 때는 기존 저장 데이터를 새 구조로 옮기는 마이그레이션을 함께 만들고, 원본 키는 지우지 말 것
 - 사용자 입력은 항상 textContent로 출력 (innerHTML에 사용자 입력 금지)
+- 글꼴은 시스템 글꼴만 사용 (외부 폰트 금지)
 - 코드 주석과 화면 문구는 한국어
