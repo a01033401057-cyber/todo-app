@@ -294,9 +294,27 @@ function setupWebApp() {
   document.head.append(manifest);
 
   if (!('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('./sw.js').catch(() => {
-    // 등록 실패해도 앱은 그대로 동작한다
+
+  // 새 버전 서비스 워커가 자리를 잡으면 한 번 새로고침해서 새 화면을 보여 준다
+  // (처음 설치할 때는 이미 새 화면이므로 새로고침하지 않는다)
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
   });
+
+  // sw.js는 HTTP 캐시를 거치지 않고 확인, 앱으로 돌아올 때마다 업데이트 확인
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
+    .then((registration) => {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') registration.update().catch(() => {});
+      });
+    })
+    .catch(() => {
+      // 등록 실패해도 앱은 그대로 동작한다
+    });
 }
 
 // 브라우저에 저장 데이터를 지우지 말아 달라고 요청한다 (지원할 때만)

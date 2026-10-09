@@ -1,7 +1,7 @@
 // 오늘의 할 일 — 서비스 워커 (오프라인 지원)
 
 // 캐시 버전: 앱 파일을 수정할 때마다 숫자를 올린다
-const CACHE_VERSION = 8;
+const CACHE_VERSION = 9;
 const CACHE_NAME = `daily-todo-cache-v${CACHE_VERSION}`;
 
 // 설치 시 미리 저장할 앱 파일 (모두 상대 경로)
@@ -48,19 +48,27 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 요청 처리: 캐시 우선, 없으면 네트워크 (같은 출처의 GET 요청만)
+// 요청 처리: 네트워크 우선 (온라인이면 항상 새 파일, 받은 파일은 캐시에 갱신)
+// 오프라인일 때만 캐시를 쓴다. 같은 출처의 GET 요청만 처리
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(request, { ignoreSearch: true }).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).catch(() => {
+    // 브라우저 HTTP 캐시(최대 10분)도 건너뛰고 서버에 새 버전이 있는지 확인한다
+    fetch(request.url, { cache: 'no-cache', credentials: 'same-origin' })
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+        }
+        return response;
+      })
+      .catch(() => caches.match(request, { ignoreSearch: true }).then((cached) => {
+        if (cached) return cached;
         // 오프라인에서 페이지 이동 요청이면 앱 첫 화면을 돌려준다
         if (request.mode === 'navigate') return caches.match('./index.html');
         return Response.error();
-      });
-    }),
+      })),
   );
 });
