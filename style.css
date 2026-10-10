@@ -1976,3 +1976,417 @@ html:has(.cinema[open]) {
     transition: none;
   }
 }
+
+/* =====================================================================
+   모던 디자인: 아이콘 · 포인트 색 · 부드러운 카드
+   (위 기본 규칙을 덮어쓴다. 색은 모두 변수로, 다크 모드는 아래 미디어 쿼리)
+   ===================================================================== */
+:root {
+  --primary-soft: #EEF2FF;
+  --primary-ink: #3730A3;
+  --hero-grad: linear-gradient(135deg, #312E81 0%, #4338CA 55%, #6D28D9 100%);
+  --card-shadow: 0 1px 2px rgba(17, 24, 39, 0.04), 0 4px 16px rgba(17, 24, 39, 0.05);
+  --card-radius: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-soft: #23284A;
+    --primary-ink: #C7D2FE;
+    --hero-grad: linear-gradient(135deg, #1E1B4B 0%, #312E81 55%, #4C1D95 100%);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.icon {
+  flex: none;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 헤더: 로고 표시 + 아이콘 버튼 */
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.01em;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--hero-grad);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.link-btn,
+.tabs button,
+.btn,
+.add-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.link-btn [data-icon],
+.tabs [data-icon],
+.btn [data-icon] {
+  display: inline-flex;
+}
+
+.tabs {
+  border-radius: 12px;
+}
+
+.tabs button.is-active {
+  color: var(--color-primary);
+}
+
+.nav-btn {
+  border-radius: 10px;
+}
+
+.period {
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+/* 필터 칩: 카테고리 아이콘에 색 */
+.filter .icon {
+  color: var(--c, currentColor);
+}
+
+.filter.is-active .icon {
+  color: inherit;
+}
+
+/* 카드(패널) */
+.panel {
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  border-color: transparent;
+}
+
+.panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  letter-spacing: 0;
+  color: var(--color-text);
+}
+
+.panel-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--primary-soft);
+  color: var(--color-primary);
+}
+
+.add-link {
+  color: var(--color-primary);
+  font-size: 0.875rem;
+}
+
+.add-link:hover {
+  background: var(--primary-soft);
+  color: var(--color-primary);
+}
+
+/* 빈 상태 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  background: var(--color-bg);
+  border-color: var(--color-border);
+}
+
+.empty-icon {
+  color: var(--color-primary);
+  opacity: 0.7;
+}
+
+/* 오늘의 썸네일: 그라데이션 포인트 */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 22px 20px;
+  border-radius: 20px;
+  background: var(--hero-grad);
+  box-shadow: 0 10px 30px rgba(67, 56, 202, 0.25);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #E0E7FF;
+}
+
+.hero-eyebrow .icon {
+  color: var(--hero-accent);
+}
+
+.hero-meta,
+.hero-title.is-placeholder,
+.hero-title.is-done {
+  color: #E0E7FF;
+}
+
+.hero-select {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.hero-select option {
+  color: #1F2937;
+  background: #FFFFFF;
+}
+
+.btn-ghost {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 진행률 숫자와 통계 */
+.summary-count {
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.bar-fill {
+  background: linear-gradient(90deg, #6366F1, var(--color-primary));
+}
+
+.stat-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-row .icon {
+  color: var(--color-primary);
+}
+
+.mini-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mini-label .icon {
+  color: var(--c);
+}
+
+/* 빠른 추가: 카테고리 아이콘 + 시간 */
+.quick-btn {
+  gap: 6px;
+  border-style: solid;
+  border-color: var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+.quick-btn .icon {
+  color: var(--c);
+}
+
+.quick-btn small {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.quick-btn:hover {
+  border-color: var(--c);
+  background: var(--color-surface);
+}
+
+/* 체크박스: 둥근 모던 스타일 */
+.todo-check,
+.goal-check,
+.check-line input,
+.design-step > input,
+.mini-item input {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-content: center;
+  border: 2px solid var(--color-muted);
+  border-radius: 7px;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mini-item input {
+  border-radius: 5px;
+}
+
+.todo-check:checked,
+.goal-check:checked,
+.check-line input:checked,
+.design-step > input:checked,
+.mini-item input:checked {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  background-size: 78%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.todo-check:hover,
+.goal-check:hover,
+.check-line input:hover {
+  border-color: var(--color-primary);
+}
+
+/* 할 일 줄 */
+.todo-item {
+  padding-left: 2px;
+  transition: background 0.15s ease;
+}
+
+.todo-item:hover {
+  background: var(--color-bg);
+}
+
+.todo-item.is-golden {
+  background: var(--golden-bg);
+  box-shadow: inset 3px 0 0 var(--hero-accent);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon-btn.is-on {
+  color: #F59E0B;
+}
+
+.icon-btn[data-act="focus"]:hover {
+  color: var(--color-primary);
+  background: var(--primary-soft);
+}
+
+/* 태그·배지 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  padding: 1px 8px 1px 6px;
+}
+
+.tag .icon {
+  color: inherit;
+}
+
+.meta-dur,
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0 7px;
+}
+
+/* 목표 카드 */
+.goal {
+  border-radius: 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.step-btn {
+  border-radius: 8px;
+}
+
+.step-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 주간·월간·연간 */
+.day-card,
+.month-card {
+  border-radius: 14px;
+  border-color: transparent;
+  box-shadow: var(--card-shadow);
+}
+
+.day-card-add,
+.tally-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tally-label .icon {
+  color: var(--c);
+}
+
+.calendar {
+  border-radius: 14px;
+}
+
+/* 안내 띠·상자 */
+.banner,
+.callout {
+  border-radius: 14px;
+}
+
+/* 창 */
+.sheet {
+  border-radius: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .todo-item,
+  .todo-check,
+  .goal-check,
+  .check-line input,
+  .design-step > input,
+  .mini-item input {
+    transition: none;
+  }
+}
+
+/* 집계 이름 칸: 아이콘 + 네 글자까지 한 줄로 */
+.tally-row {
+  grid-template-columns: 92px minmax(0, 1fr) 44px;
+}
+
+.tally-label {
+  white-space: nowrap;
+}

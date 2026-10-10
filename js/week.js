@@ -111,14 +111,14 @@ function dayCard(dateText) {
         thumb === item.id && h('span', { class: 'mini-star', text: '★ ' }),
         item.time && h('span', { class: 'mini-time', text: `${item.time} ` }),
         item.title)))),
-    h('button', { type: 'button', class: 'day-card-add', text: '+ 추가', 'aria-label': `${dayLabel(dateText)}에 할 일 추가`, data: actData('new-plan', { pick: 'day', date: dateText }) }));
+    h('button', { type: 'button', class: 'day-card-add', 'aria-label': `${dayLabel(dateText)}에 할 일 추가`, data: actData('new-plan', { pick: 'day', date: dateText }) }, icon('plus', 14), '추가'));
 }
 
 // ----- 주간 계획 (요일 없는 할 일) -----
 function weekPlansPanel(mondayText) {
   const list = sortPlans(itemsOf('plan', 'week', mondayText).filter((item) => state.filter === 'all' || item.cat === state.filter));
   return panel('주간 계획',
-    h('button', { type: 'button', class: 'link-btn add-link', text: '+ 계획', data: actData('new-plan', { pick: 'week', date: mondayText }) }),
+    addLink('계획', actData('new-plan', { pick: 'week', date: mondayText })),
     list.length
       ? h('ul', { class: 'todo-list' }, list.map((item) => planRow(item)))
       : emptyNote('요일을 정하지 않은 이번 주 할 일을 결과물로 적어 두세요.'));
@@ -150,7 +150,7 @@ function tallyPanel(title, list) {
   return panel(title, null,
     rows.length
       ? h('ul', { class: 'tally' }, rows.map((row) => h('li', { class: 'tally-row', cat: row.cat.id },
-        h('span', { text: row.cat.label }),
+        h('span', { class: 'tally-label' }, catIcon(row.cat.id, 12), row.cat.label),
         h('div', { class: 'bar tally-bar', title: `${row.done}/${row.total}` }, h('span', { class: 'bar-fill', width: (row.done / max) * 100 })),
         h('span', { class: 'tally-num', text: `${row.done}/${row.total}` }))))
       : emptyNote('기록된 할 일이 없어요.'));
@@ -173,7 +173,7 @@ function renderWeek() {
       weekDesignPanel(monday),
       h('section', { class: 'panel', 'aria-label': '이번 주 진행률' },
         progressSummary(visible),
-        h('div', { class: 'stat-row' }, h('span', {}, '이번 주 몰입 ', h('b', { text: String(focusTotal) }), '분'))),
+        h('div', { class: 'stat-row' }, h('span', {}, icon('flame', 14), '이번 주 몰입 ', h('b', { text: String(focusTotal) }), '분'))),
       h('ul', { class: 'week-grid', 'aria-label': '이번 주 7일' }, days.map(dayCard)),
       weekPlansPanel(monday),
       weekReviewPanel(monday),

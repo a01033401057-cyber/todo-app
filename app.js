@@ -69,7 +69,8 @@ function renderFilters() {
     class: `filter${state.filter === option.id ? ' is-active' : ''}`,
     'aria-pressed': String(state.filter === option.id),
     data: actData('filter', { v: option.id }),
-  }, option.id !== 'all' && h('span', { class: 'dot', cat: option.id }), option.label)));
+    cat: option.id !== 'all' ? option.id : null,
+  }, icon(option.id === 'all' ? 'layers' : option.id, 14), option.label)));
 }
 
 // 기간 이동 줄, 탭, 예시 안내
@@ -351,6 +352,7 @@ seedExamplesIfEmpty();
 if (VIEWS.includes(store.ui.view)) state.view = store.ui.view;
 setupEditor();
 setupSettings();
+applyStaticIcons();
 setupGuide();
 setupBlogLink();
 setupCinema();

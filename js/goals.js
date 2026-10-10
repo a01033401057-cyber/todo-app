@@ -40,7 +40,7 @@ function goalRow(goal) {
 function goalsPanel(title, scope, key, pick, dateText, extra) {
   const goals = goalsOf(scope, key);
   return panel(title,
-    h('button', { type: 'button', class: 'link-btn add-link', text: '+ 목표', data: actData('new-goal', { pick, date: dateText }) }),
+    addLink('목표', actData('new-goal', { pick, date: dateText })),
     goals.length ? h('ul', { class: 'goal-list' }, goals.map(goalRow)) : emptyNote('아직 목표가 없어요.'),
     extra);
 }

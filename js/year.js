@@ -19,7 +19,7 @@ function yearPlansPanel(year) {
     list: sortPlans(plans.filter((item) => (Number(item.month) || 0) === month)),
   })).filter((group) => group.list.length);
   return panel('연간 계획',
-    h('button', { type: 'button', class: 'link-btn add-link', text: '+ 계획', data: actData('new-plan', { pick: 'year', date: `${year}-${pad(defaultMonth)}-01` }) }),
+    addLink('계획', actData('new-plan', { pick: 'year', date: `${year}-${pad(defaultMonth)}-01` })),
     groups.length
       ? h('div', { class: 'year-plan-groups' }, groups.map((group) => h('section', { class: 'year-plan-group', 'aria-label': group.month ? `${group.month}월` : '연중 (미지정)' },
         h('h3', { class: 'group-title', text: group.month ? `${group.month}월` : '연중 (미지정)' }),

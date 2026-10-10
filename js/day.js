@@ -43,7 +43,7 @@ function goldenPanel() {
 // 오늘의 썸네일 카드
 function heroCard(dateText) {
   const item = thumbItem(dateText);
-  const eyebrow = h('span', { class: 'hero-eyebrow', text: '오늘의 썸네일 · 가장 중요한 1가지' });
+  const eyebrow = h('span', { class: 'hero-eyebrow' }, icon('star-fill', 14), '오늘의 썸네일 · 가장 중요한 1가지');
   if (!item) {
     const candidates = sortPlans(dayPlans(dateText)).filter((plan) => !plan.done);
     return h('section', { class: 'hero', 'aria-label': '오늘의 썸네일' },
@@ -77,8 +77,8 @@ function heroCard(dateText) {
 // 썸네일 카드 버튼
 function heroActions(item) {
   return [
-    h('button', { type: 'button', class: 'btn btn-accent', text: '영화관 모드로 시작', data: actData('focus', { id: item.id }) }),
-    h('button', { type: 'button', class: 'btn btn-ghost', text: '완료', data: actData('toggle', { id: item.id }) }),
+    h('button', { type: 'button', class: 'btn btn-accent', data: actData('focus', { id: item.id }) }, icon('play', 16), '영화관 모드로 시작'),
+    h('button', { type: 'button', class: 'btn btn-ghost', data: actData('toggle', { id: item.id }) }, icon('check', 16), '완료'),
   ];
 }
 
@@ -91,8 +91,8 @@ function dayProgressPanel(dateText) {
     progressSummary(plans),
     total > 0 && done === total && h('p', { class: 'celebrate', text: dateText === todayString() ? '오늘 할 일을 모두 끝냈어요!' : '이 날의 할 일을 모두 끝냈어요!' }),
     h('div', { class: 'stat-row' },
-      h('span', {}, '계획 ', h('b', { text: formatHours(planned) }), '시간'),
-      h('span', {}, '골든 타임 할 일 ', h('b', { text: String(plans.filter(isGolden).length) }), '개'),
+      h('span', {}, icon('clock', 14), '계획 ', h('b', { text: formatHours(planned) }), '시간'),
+      h('span', {}, icon('sun', 14), '골든 타임 할 일 ', h('b', { text: String(plans.filter(isGolden).length) }), '개'),
       dayStatsExtra(dateText)),
     miniProgress(plans));
 }
@@ -100,7 +100,7 @@ function dayProgressPanel(dateText) {
 // 진행률 줄: 그날 몰입 시간
 function dayStatsExtra(dateText) {
   const label = dateText === todayString() ? '오늘 몰입 ' : '이날 몰입 ';
-  return h('span', {}, label, h('b', { text: String(Number(getDay(dateText).focusMin) || 0) }), '분');
+  return h('span', {}, icon('flame', 14), label, h('b', { text: String(Number(getDay(dateText).focusMin) || 0) }), '분');
 }
 
 // 빠른 추가
@@ -112,7 +112,7 @@ function quickAddPanel() {
       cat,
       'aria-label': `빠른 추가: ${title} ${formatDuration(minutes)}`,
       data: actData('quick', { i: String(index) }),
-    }, h('span', { class: 'dot' }), `${title} ${formatDuration(minutes)}`))));
+    }, catIcon(cat, 14), h('span', { text: title }), h('small', { text: formatDuration(minutes) })))));
 }
 
 // 추가 폼 (입력 중인 값은 state에 보관해서 다시 그려도 사라지지 않게)
@@ -125,7 +125,7 @@ function addForm() {
     h('label', { class: 'visually-hidden', htmlFor: 'add-category', text: '카테고리' }),
     select,
     h('button', { type: 'button', class: 'btn', id: 'add-detail', text: '자세히' }),
-    h('button', { type: 'submit', class: 'btn btn-primary', text: '추가' }));
+    h('button', { type: 'submit', class: 'btn btn-primary' }, icon('plus', 16), '추가'));
 }
 
 // 정렬 토글

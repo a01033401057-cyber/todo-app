@@ -5,16 +5,31 @@ function actData(act, extra = {}) {
   return { act, ...extra, fk: [act, ...Object.values(extra)].join(':') };
 }
 
-// 카테고리 태그
+// 카테고리 태그 (아이콘 + 이름)
 function tagNode(catId) {
-  return h('span', { class: 'tag', cat: catId, text: (CATEGORY_MAP[catId] ?? CATEGORY_MAP.etc).label });
+  return h('span', { class: 'tag', cat: catId }, catIcon(catId, 12), (CATEGORY_MAP[catId] ?? CATEGORY_MAP.etc).label);
 }
 
-// 패널: 제목 + 오른쪽 도구 + 본문
+// 패널 제목 → 아이콘 (제목에 들어 있는 낱말로 고른다)
+const PANEL_ICONS = [
+  [/목표/, 'target'], [/루틴/, 'sunrise'], [/골든/, 'sun'], [/빠른 추가/, 'zap'], [/일일 계획/, 'list'],
+  [/피드백/, 'message'], [/설계/, 'compass'], [/주간 계획/, 'clipboard'], [/연간 계획/, 'flag'],
+  [/카테고리/, 'chart'], [/12개월/, 'grid'],
+];
+
+// 패널: 아이콘 + 제목 + 오른쪽 도구 + 본문
 function panel(title, tools, ...body) {
+  const found = PANEL_ICONS.find(([pattern]) => pattern.test(title));
   return h('section', { class: 'panel' },
-    h('div', { class: 'panel-head' }, h('h2', { class: 'panel-title', text: title }), tools),
+    h('div', { class: 'panel-head' },
+      h('h2', { class: 'panel-title' }, found && h('span', { class: 'panel-icon' }, icon(found[1], 16)), title),
+      tools),
     body);
+}
+
+// '+ 목표' 같은 작은 추가 버튼
+function addLink(label, data) {
+  return h('button', { type: 'button', class: 'link-btn add-link', data }, icon('plus', 16), label);
 }
 
 // 작은 안내 문구
@@ -32,9 +47,9 @@ function metaLine(item, golden) {
   return h('div', { class: 'todo-meta' },
     tagNode(item.cat),
     item.sub && h('span', { text: item.sub }),
-    item.dur && h('span', { text: formatDuration(item.dur) }),
-    item.fixed && h('span', { class: 'badge badge-fixed', text: '고정' }),
-    golden && h('span', { class: 'badge badge-golden', text: '골든 타임' }),
+    item.dur && h('span', { class: 'meta-dur' }, icon('clock', 12), formatDuration(item.dur)),
+    item.fixed && h('span', { class: 'badge badge-fixed' }, icon('pin', 11), '고정'),
+    golden && h('span', { class: 'badge badge-golden' }, icon('sun', 11), '골든 타임'),
     item.memo && h('span', { class: 'meta-memo', text: item.memo }));
 }
 
@@ -57,17 +72,15 @@ function planRow(item, opts = {}) {
         'aria-pressed': String(isThumb),
         'aria-label': `오늘의 썸네일로 정하기: ${item.title}`,
         title: '오늘의 썸네일로 정하기',
-        text: isThumb ? '★' : '☆',
         data: actData('thumb', { id: item.id }),
-      }),
+      }, icon(isThumb ? 'star-fill' : 'star', 18)),
       !item.done && h('button', {
         type: 'button',
         class: 'icon-btn',
         'aria-label': `영화관 모드로 집중하기: ${item.title}`,
         title: '영화관 모드로 집중하기',
-        text: '▶',
         data: actData('focus', { id: item.id }),
-      })));
+      }, icon('play', 16))));
 }
 
 // 전체 진행률 줄: 'N / M 완료' + 막대 + %
@@ -85,7 +98,7 @@ function miniProgress(list) {
   return h('ul', { class: 'mini-progress' }, CATEGORIES.map((cat) => {
     const progress = getProgress(list.filter((item) => item.cat === cat.id));
     return h('li', { class: `mini${progress.total === 0 ? ' is-empty' : ''}`, cat: cat.id },
-      h('span', { class: 'mini-label', text: cat.label }),
+      h('span', { class: 'mini-label' }, catIcon(cat.id, 12), cat.label),
       bar(progress.percent, 'mini-bar'),
       h('span', { class: 'mini-text', text: `${progress.done}/${progress.total}` }));
   }));
@@ -93,5 +106,5 @@ function miniProgress(list) {
 
 // 빈 상태 안내
 function emptyNote(text) {
-  return h('p', { class: 'empty', text });
+  return h('p', { class: 'empty' }, icon('sparkles', 18, 'empty-icon'), h('span', { text }));
 }
