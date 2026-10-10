@@ -2390,3 +2390,177 @@ html:has(.cinema[open]) {
 .tally-label {
   white-space: nowrap;
 }
+
+/* =====================================================================
+   감성 배경 · 오늘의 한마디
+   ===================================================================== */
+:root {
+  --page-base: #F7F5FB;
+  --glow-1: rgba(196, 181, 253, 0.65); /* 라벤더 */
+  --glow-2: rgba(253, 205, 180, 0.6);  /* 복숭아 */
+  --glow-3: rgba(167, 230, 210, 0.5); /* 민트 */
+  --page-dot: rgba(79, 70, 229, 0.07);
+  --quote-bg: rgba(255, 255, 255, 0.72);
+  --quote-border: rgba(255, 255, 255, 0.9);
+  --quote-ink: #2E2A4F;
+  --quote-mark: #C4B5FD;
+  --quote-accent: #6D28D9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-base: #0E0F1F;
+    --glow-1: rgba(99, 76, 214, 0.32);
+    --glow-2: rgba(190, 90, 140, 0.18);
+    --glow-3: rgba(40, 150, 160, 0.18);
+    --page-dot: rgba(199, 210, 254, 0.07);
+    --quote-bg: rgba(30, 30, 58, 0.72);
+    --quote-border: rgba(165, 160, 255, 0.16);
+    --quote-ink: #ECEBFF;
+    --quote-mark: #6D5BD0;
+    --quote-accent: #C4B5FD;
+  }
+}
+
+html {
+  background: var(--page-base);
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  background: var(--page-base);
+  isolation: isolate;
+}
+
+/* 화면에 고정된 배경: 부드러운 빛 번짐 + 옅은 점 무늬 + 종이 질감 (스크롤해도 움직이지 않음) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+body::before {
+  background:
+    radial-gradient(42vmax 34vmax at 6% 4%, var(--glow-1), transparent 70%),
+    radial-gradient(38vmax 30vmax at 96% 10%, var(--glow-2), transparent 70%),
+    radial-gradient(46vmax 36vmax at 70% 104%, var(--glow-3), transparent 70%),
+    radial-gradient(30vmax 26vmax at 0% 90%, var(--glow-2), transparent 70%);
+}
+
+body::after {
+  background-image:
+    radial-gradient(var(--page-dot) 1px, transparent 1.4px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  background-size: 22px 22px, 160px 160px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* 카드는 아주 살짝 비치게 해서 배경과 어우러지게 (글자 대비는 그대로) */
+.panel {
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+}
+
+/* ----- 오늘의 한마디 ----- */
+.quote-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 16px 18px 20px;
+  border: 1px solid var(--quote-border);
+  border-radius: var(--card-radius);
+  background:
+    linear-gradient(120deg, rgba(196, 181, 253, 0.22), transparent 55%),
+    var(--quote-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--card-shadow);
+  color: var(--quote-ink);
+  overflow: hidden;
+}
+
+.quote-mark {
+  flex: none;
+  margin-top: -6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3.25rem;
+  line-height: 1;
+  color: var(--quote-mark);
+}
+
+.quote-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quote-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--quote-accent);
+}
+
+.quote-text {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.quote-next {
+  flex: none;
+  color: var(--quote-accent);
+}
+
+.quote-next .icon {
+  transition: transform 0.4s ease;
+}
+
+.quote-next:hover .icon,
+.quote-next:focus-visible .icon {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-next .icon {
+    transition: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .quote-card {
+    padding: 14px 10px 14px 14px;
+    gap: 8px;
+  }
+
+  .quote-mark {
+    font-size: 2.5rem;
+  }
+
+  .quote-text {
+    font-size: 1rem;
+  }
+}
+
+/* 설정: 체크 한 줄 */
+.check-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch);
+  font-size: 0.9375rem;
+}

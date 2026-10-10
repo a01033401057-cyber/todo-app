@@ -179,7 +179,7 @@ function renderDay() {
   setPeriod(dayLabel(dateText), dateText === todayString() ? '오늘' : `${parseDate(dateText).getFullYear()}년`);
   return {
     side: [daySideTop(dateText), routinePanel(dateText), goldenPanel()],
-    main: [dayTopNotice(dateText), heroCard(dateText), dayProgressPanel(dateText), quickAddPanel(), dayPlanPanel(dateText), dayBottom(dateText)],
+    main: [quoteCard(dateText), dayTopNotice(dateText), heroCard(dateText), dayProgressPanel(dateText), quickAddPanel(), dayPlanPanel(dateText), dayBottom(dateText)],
   };
 }
 

@@ -60,6 +60,7 @@ const DEFAULT_SETTINGS = {
   golden: ['06:00', '09:00'],
   routine: ['물 한 잔 마시기', '이불 정리', '오늘의 핵심 1가지 확인'],
   weekHours: 15,
+  showQuote: true,
 };
 
 // ===== 날짜 (모두 로컬 시간 기준, toISOString으로 날짜 문자열을 만들지 않는다) =====
@@ -226,7 +227,8 @@ function normalizeSettings(raw) {
     : [...DEFAULT_SETTINGS.routine];
   const weekHours = Number(value.weekHours) >= 1 && Number(value.weekHours) <= 120
     ? Number(value.weekHours) : DEFAULT_SETTINGS.weekHours;
-  return { golden, routine, weekHours };
+  const showQuote = typeof value.showQuote === 'boolean' ? value.showQuote : DEFAULT_SETTINGS.showQuote;
+  return { golden, routine, weekHours, showQuote };
 }
 
 // 모든 데이터를 불러온다. v2 항목이 없고 v1이 있으면 한 번만 옮긴다 (v1 키는 그대로 둔다)

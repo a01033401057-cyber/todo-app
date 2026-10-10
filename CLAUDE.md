@@ -1,7 +1,7 @@
 # 오늘의 할 일 — 프로젝트 규칙
 
 - 순수 HTML, CSS, JavaScript(ES6+)만 사용. 외부 라이브러리, 프레임워크, 빌드 도구, CDN 금지
-- 파일 구성: index.html, style.css, app.js, js/ 폴더(core → icons → parts → editor → settings → cinema → goals → day → week → month → year 순서로 불러옴), manifest.json, sw.js, icons/ 폴더 (아이콘 생성 스크립트는 tools/make_icons.py)
+- 파일 구성: index.html, style.css, app.js, js/ 폴더(core → icons → parts → editor → settings → cinema → quotes → goals → day → week → month → year 순서로 불러옴), manifest.json, sw.js, icons/ 폴더 (아이콘 생성 스크립트는 tools/make_icons.py)
 - app.js가 너무 커지면 js/ 폴더에 파일을 나눠도 됨. 단 ES 모듈(type="module", import)은 file://에서 동작하지 않으므로 금지. 일반 <script src> 태그로 순서대로 불러오고, 새 파일은 sw.js의 APP_FILES에도 추가할 것
 - reference/ 폴더는 참고용이며 앱에서 불러오거나 sw.js 캐시에 넣지 말 것
 - index.html을 브라우저에서 더블클릭해 바로 실행되어야 함 (서버 불필요). file:// 실행도 계속 오류 없이 동작해야 함 (서비스 워커는 http/https에서만 등록)

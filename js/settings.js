@@ -7,6 +7,7 @@ const settingsDialog = {
   goldenEnd: document.getElementById('s-golden-end'),
   routine: document.getElementById('s-routine'),
   weekHours: document.getElementById('s-week-hours'),
+  showQuote: document.getElementById('s-show-quote'),
   error: document.getElementById('s-error'),
 };
 
@@ -301,11 +302,12 @@ function openGuide() {
 
 function openSettings() {
   const s = settingsDialog;
-  const { golden, routine, weekHours } = store.settings;
+  const { golden, routine, weekHours, showQuote } = store.settings;
   s.goldenStart.value = golden[0];
   s.goldenEnd.value = golden[1];
   s.routine.value = routine.join('\n');
   s.weekHours.value = String(weekHours);
+  s.showQuote.checked = showQuote;
   s.error.hidden = true;
   s.dialog.showModal();
   s.goldenStart.focus();
@@ -332,6 +334,7 @@ function saveSettingsForm() {
     golden: [start, end],
     routine: s.routine.value.split('\n'),
     weekHours: hours,
+    showQuote: s.showQuote.checked,
   });
   saveSettings();
   s.dialog.close();

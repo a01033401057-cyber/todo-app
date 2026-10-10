@@ -214,6 +214,10 @@ function handleAction(element) {
     case 'settings':
       openSettings();
       break;
+    case 'quote-next':
+      nextQuote(element.dataset.date);
+      render();
+      break;
     case 'quick':
       quickAdd(Number(element.dataset.i));
       break;
